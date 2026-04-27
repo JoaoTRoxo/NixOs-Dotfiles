@@ -1,13 +1,12 @@
 {inputs, pkgs, config, lib, ...}:
 
-let {
+let
 
   privateFile = ../private.nix;
 
   private = if builtins.pathExists privateFile
             then import privateFile
             else { rnl-ipv4 = "0.0.0.0"; rnl-ipv6 = "0.0.0.0"; rnl-gateway = "0.0.0.0"; };
-}
 in {
   networking = {
     hostName = "rnl-simaolavos";
