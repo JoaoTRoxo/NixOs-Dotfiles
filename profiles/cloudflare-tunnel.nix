@@ -1,12 +1,6 @@
 { config, pkgs, ... }:
 
-let
-  privateFile = ./private.nix;
-
-  private = if builtins.pathExists privateFile
-  then import privateFile
-  else { tunnelId = "00000000-0000-0000-0000-000000000000"; };
-in {
+{
   users.users.cloudflared = {
     group = "cloudflared";
     isSystemUser = true;
@@ -27,7 +21,7 @@ in {
 
   services.cloudflared = {
     enable = true;
-    tunnels."${private.tunnelId}" = {
+    tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e" = {
         credentialsFile = config.age.secrets.vault-tunnel.path;
         default = "http_status:404";
     };

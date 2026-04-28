@@ -1,13 +1,5 @@
 {inputs, pkgs, config, lib, ...}:
-
-let
-
-  privateFile = ../private.nix;
-
-  private = if builtins.pathExists privateFile
-            then import privateFile
-            else { rnl-ipv4 = "0.0.0.0"; rnl-ipv6 = "0.0.0.0"; rnl-gateway = "0.0.0.0"; };
-in {
+{
   networking = {
     hostName = "rnl-simaolavos";
 
@@ -20,14 +12,14 @@ in {
       };
       ipv4 = {
         addresses = [{
-          address = private.rnl-ipv4;
+          address = "193.136.164.195";
           prefixLength = 27;
         }];
       };
 
       ipv6 = {
         addresses = [{
-          address = private.rnl-ipv6;
+          address = "2001:690:2100:82::195";
           prefixLength = 64;
         }];
       };
@@ -54,7 +46,7 @@ in {
 
     };
 
-    defaultGateway = private.rnl-gateway;
+    defaultGateway = "193.136.164.222";
     nameservers = [ "1.1.1.1" ];
   };
 }

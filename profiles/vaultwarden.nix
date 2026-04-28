@@ -1,12 +1,6 @@
 { config, lib, ... }:
-let
-  privateFile = ./private.nix;
 
-  private = if builtins.pathExists privateFile
-  then import privateFile
-  else { tunnelId = "00000000-0000-0000-0000-000000000000"; };
-
-in {
+{
   age.secrets.vw-secrets = {
     file = ../secrets/vw-secrets.age;
     owner = "vaultwarden";
@@ -43,7 +37,7 @@ in {
     };
   };
 
-  services.cloudflared.tunnels."${private.tunnelId}".ingress."vault.sslavos.com" = {
+  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."vault.sslavos.com" = {
     service = "http://localhost:80";
   };
 

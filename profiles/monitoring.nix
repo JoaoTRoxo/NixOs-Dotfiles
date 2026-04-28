@@ -1,12 +1,6 @@
 { config, pkgs, ... }:
 
-let
-  privateFile = ./private.nix;
-  
-  private = if builtins.pathExists privateFile
-  then import privateFile
-  else { tunnelId = "00000000-0000-0000-0000-000000000000"; };
-in {
+{
   age.secrets.grafana-secret = {
     file = ../secrets/grafana-secret.age;
     owner = "grafana";
@@ -63,12 +57,12 @@ in {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https; # Dizemos ao Grafana que o pedido original é HTTPS
+        proxy_set_header X-Forwarded-Proto https;
       '';
     };
   };
 
-  services.cloudflared.tunnels."${private.tunnelId}".ingress."monitoring.sslavos.com" = {
+  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."monitoring.sslavos.com" = {
     service = "http://localhost:80";
   };
 }
