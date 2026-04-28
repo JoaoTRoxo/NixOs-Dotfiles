@@ -25,7 +25,7 @@
   users.users.simaolavos = {
     isNormalUser = true;
     description = "Simão Lavos";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
     packages = with pkgs; [
       kdePackages.kate
       thunderbird

@@ -32,10 +32,26 @@ in {
         }];
       };
 
+
+
     };
     firewall = {
       enable = true;
       allowedUDPPorts = [ 9 ];
+    };
+    nat = {
+      enable = true;
+      internalInterfaces = [ "virbr0" ];
+      externalInterface = "enp4s0";
+
+      forwardPorts = [
+        {
+          sourcePort = 2222;
+          proto = "tcp";
+          destination = "192.168.122.219:22";
+        }
+      ];
+
     };
 
     defaultGateway = private.rnl-gateway;

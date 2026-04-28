@@ -20,12 +20,19 @@
 
   users.users.simaolavos.extraGroups = [ "docker" ];
 
+
   programs.firefox.enable = true;
 
   programs.bash = {
     interactiveShellInit = "eval \"$(atuin init bash)\"";
   };
 
+  virtualisation.libvirtd.enable = true;
+
+  boot.extraModprobeConfig = ''
+    options kvm_amd nested=1
+    options kvm ignore_msrs=1
+  '';
 
   environment.systemPackages = with pkgs; [
     fastfetch
