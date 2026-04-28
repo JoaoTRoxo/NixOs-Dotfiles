@@ -62,7 +62,7 @@
     };
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."monitoring.sslavos.com" = {
+  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."monitor.sslavos.com" = {
     service = "http://localhost:80";
   };
 }

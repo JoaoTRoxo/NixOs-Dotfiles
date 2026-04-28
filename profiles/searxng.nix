@@ -11,18 +11,16 @@
     enable = true;
     package = pkgs.searxng;
     
-    # Nas versões recentes, settings deve ser bem minimalista no início
     settings = {
       server = {
+        base_url = "https://search.sslavos.com/";
         port = 8888;
         bind_address = "127.0.0.1";
         secret_key = "placeholder-nixos-build";
-        base_url = "https://search.sslavos.com/";
       };
       ui = {
         theme = "simple";
       };
-      # Se o erro persistir, comenta esta secção de engines para testar
       engines = [
         { name = "google"; engine = "google"; shortcut = "go"; }
         { name = "duckduckgo"; engine = "duckduckgo"; shortcut = "ddg"; }
@@ -40,10 +38,6 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8888";
       proxyWebsockets = true;
-      extraConfig = ''
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto https;
-      '';
     };
   };
 
