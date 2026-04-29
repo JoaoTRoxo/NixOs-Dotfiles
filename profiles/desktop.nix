@@ -27,12 +27,16 @@
     interactiveShellInit = "eval \"$(atuin init bash)\"";
   };
 
-  virtualisation.libvirtd.enable = true;
 
-  boot.extraModprobeConfig = ''
-    options kvm_amd nested=1
-    options kvm ignore_msrs=1
-  '';
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      onBoot = "ignore";
+      qemu = {
+        runAsRoot = false;
+      };
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     fastfetch

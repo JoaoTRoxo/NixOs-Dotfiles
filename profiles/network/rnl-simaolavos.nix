@@ -36,17 +36,10 @@
       internalInterfaces = [ "virbr0" ];
       externalInterface = "enp4s0";
 
-      forwardPorts = [
-        {
-          sourcePort = 2222;
-          proto = "tcp";
-          destination = "192.168.122.219:22";
-        }
-      ];
-
     };
 
     defaultGateway = "193.136.164.222";
     nameservers = [ "1.1.1.1" ];
   };
+
 }
