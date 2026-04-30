@@ -22,6 +22,7 @@
         theme = "simple";
       };
       engines = [
+        { name = "startpage"; engine = "startpage"; shortcut = "sp"; }
         { name = "google"; engine = "google"; shortcut = "go"; }
         { name = "duckduckgo"; engine = "duckduckgo"; shortcut = "ddg"; }
       ];
