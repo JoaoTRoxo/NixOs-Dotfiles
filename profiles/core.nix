@@ -70,8 +70,12 @@
 
     services.openssh =  {
       enable = true;
-      settings.PasswordAuthentication = false;
-      settings.KbdInteractiveAuthentication = false;
+      settings = {
+        PermitRootLogin = "without-password";
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
+
     };
 
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
