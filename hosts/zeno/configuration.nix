@@ -14,6 +14,7 @@
       ../../profiles/adguard.nix
       ../../profiles/monitoring.nix
       ../../profiles/searxng.nix
+      ../../profiles/gitea.nix
     ];
 
   boot.loader.grub.enable = true;

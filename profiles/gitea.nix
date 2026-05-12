@@ -9,9 +9,8 @@
       server = {
         DOMAIN   = "git.sslavos.com";
         ROOT_URL = "https://git.sslavos.com/";
-
         HTTP_ADDRESS = "127.0.0.1";
-        HTTP_PORT    = 3000;
+        HTTP_PORT    = 3001;
 
         DISABLE_SSH      = false;
         START_SSH_SERVER = false;
@@ -19,17 +18,14 @@
       };
 
       service.REGISTER_EMAIL_CONFIRM = true;
+      service.DISABLE_REGISTRATION = true;
 
-      log = {
-        MODE  = "file";
-        LEVEL = "warn";
-      };
     };
   };
 
   services.nginx.virtualHosts."git.sslavos.com" = {
     locations."/" = {
-      proxyPass    = "http://127.0.0.1:3000/";
+      proxyPass    = "http://127.0.0.1:3001/";
       proxyWebsockets = true;
     };
   };
