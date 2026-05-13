@@ -5,6 +5,7 @@
     [
       ../../profiles/network/aurea.nix
       ../../profiles/hardware/aurea-hw.nix
+      ../../profiles/cloudflare-tunnel.nix
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
     ];

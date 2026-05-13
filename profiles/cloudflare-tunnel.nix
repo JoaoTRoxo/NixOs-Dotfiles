@@ -21,7 +21,7 @@
 
   services.cloudflared = {
     enable = true;
-    tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e" = {
+    tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3" = {
         credentialsFile = config.age.secrets.vault-tunnel.path;
         default = "http_status:404";
     };
