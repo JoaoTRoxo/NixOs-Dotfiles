@@ -6,15 +6,7 @@
       ../../profiles/network/aurea.nix
       ../../profiles/hardware/aurea-hw.nix
       ../../profiles/core.nix
-      ../../profiles/vaultwarden.nix
-      ../../profiles/cloudflare-tunnel.nix
-      ../../profiles/navidrome.nix
       ../../profiles/tailscale.nix
-      ../../profiles/nextcloud.nix
-      ../../profiles/adguard.nix
-      ../../profiles/monitoring.nix
-      ../../profiles/searxng.nix
-      ../../profiles/gitea.nix
     ];
 
   boot.loader.grub.enable = true;
