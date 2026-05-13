@@ -1,3 +1,2 @@
 profiles/private.nix
-secrets/*
 flake.lock
