@@ -3,8 +3,8 @@
 {
   imports =
     [
-      ../../profiles/network/zeno.nix
-      ../../profiles/hardware/zeno-hw.nix
+      ../../profiles/network/aurea.nix
+      ../../profiles/hardware/aurea-hw.nix
       ../../profiles/core.nix
       ../../profiles/vaultwarden.nix
       ../../profiles/cloudflare-tunnel.nix
@@ -34,7 +34,7 @@
   #Turn off the screen after some time
   boot.kernelParams = [ "consoleblank=300" ];
 
-  users.users.root.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINdDq2tDLBbOuSWGX6oT03uciK7u5HouhaE7DkVlFt/J simaolavos@dog" ];
+  users.users.root.openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvbx6tMWqkVWBiWxZ1WpUn2kT3ZPT+4xUQgNV4K98Gx roxo@archlinux" ];
 
 
   system.stateVersion = "25.05";

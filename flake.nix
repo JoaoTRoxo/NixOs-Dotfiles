@@ -36,17 +36,7 @@
       ];
     in {
       nixosConfigurations = {
-        rnl-simaolavos = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = baseModules ++ [./hosts/rnl-simaolavos/configuration.nix];
-        };
-        dog = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = baseModules ++ [./hosts/dog/configuration.nix ./profiles/noctalia.nix];
-        };
-        zeno = nixpkgs.lib.nixosSystem {
+        aurea = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = baseModules ++ [./hosts/zeno/configuration.nix];
