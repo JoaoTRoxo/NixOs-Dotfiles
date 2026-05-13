@@ -1,6 +1,6 @@
 let
         roxo = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvbx6tMWqkVWBiWxZ1WpUn2kT3ZPT+4xUQgNV4K98Gx roxo@archlinux";
-	aurea = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHgprombM+WE1zGUnBGQr86EOtd2dKSJyT+by/FWEC6w aurea@aurea";
+	aurea = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKo8x+TC35LMBUvsgK8nkqSO0NnKTiWuZubnCO2UUjJ0 root@zeno";
 	hosts = [ aurea roxo ];
 in {
     "vault-tunnel.age".publicKeys = [ aurea roxo ];
