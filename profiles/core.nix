@@ -22,7 +22,7 @@
 
   console.keyMap = "pt-latin1";
 
-  users.users.simaolavos = {
+  users.users.aurea = {
     isNormalUser = true;
     description = "Simão Lavos";
     extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
@@ -31,7 +31,7 @@
       thunderbird
     ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINdDq2tDLBbOuSWGX6oT03uciK7u5HouhaE7DkVlFt/J simaolavos@dog"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvbx6tMWqkVWBiWxZ1WpUn2kT3ZPT+4xUQgNV4K98Gx roxo@archlinux"
     ];
   };
 
