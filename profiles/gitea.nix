@@ -23,11 +23,11 @@
     };
   };
 
-  services.caddy.virtualHosts."git.joaoroxo.com" = {
-    locations."/" = {
-      proxyPass    = "http://127.0.0.1:3001/";
-      proxyWebsockets = true;
-    };
+  services.caddy.virtualHosts."http://git.joaoroxo.com" = {
+    extraConfig = ''
+      reverse_proxy 127.0.0.1:3001
+      '';
+    
   };
 
   services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."git.joaoroxo.com" = {

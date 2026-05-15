@@ -2,8 +2,10 @@
 
 {
   imports =
+    
     [
       ../../profiles/network/aurea.nix
+      ../../profiles/gitea.nix
       ../../profiles/hardware/aurea-hw.nix
       ../../profiles/cloudflare-tunnel.nix
       ../../profiles/portfolio.nix
