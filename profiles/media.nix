@@ -2,17 +2,20 @@
 
 {
   virtualisation.docker.enable = true;
+  virtualisation.oci-containers.backend = "docker";
+  networking.firewall.trustedInterfaces = [ "docker0" ];
 
   # 1. Jellyfin Media Server (Native)
+# 1. Jellyfin Media Server (Native)
   services.jellyfin = {
     enable = true;
     openFirewall = true;
   };
 
   # 2. Caddy Reverse Proxy
-  services.caddy.virtualHosts."http://git.joaoroxo.com" = {
+  services.caddy.virtualHosts."http://anime.joaoroxo.com" = {
     extraConfig = ''
-      reverse_proxy 127.0.0.1:3001
+      reverse_proxy 127.0.0.1:8096
       '';
 
   };
