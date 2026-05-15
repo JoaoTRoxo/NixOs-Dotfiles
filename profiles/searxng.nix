@@ -13,7 +13,7 @@
     
     settings = {
       server = {
-        base_url = "https://search.sslavos.com/";
+        base_url = "https://search.joaoroxo.com/";
         port = 8888;
         bind_address = "127.0.0.1";
         secret_key = "placeholder-nixos-build";
@@ -34,15 +34,15 @@
     "SEARX_SECRET_KEY__FILE=${config.age.secrets.searxng-secret.path}"
   ];
 
-  # Nginx (Cloudflare tratta do SSL)
-  services.nginx.virtualHosts."search.sslavos.com" = {
+  # caddy (Cloudflare tratta do SSL)
+  services.caddy.virtualHosts."search.joaoroxo.com" = {
     locations."/" = {
       proxyPass = "http://127.0.0.1:8888";
       proxyWebsockets = true;
     };
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."search.sslavos.com" = {
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."search.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 }

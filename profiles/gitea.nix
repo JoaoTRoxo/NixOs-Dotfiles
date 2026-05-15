@@ -7,8 +7,8 @@
 
     settings = {
       server = {
-        DOMAIN   = "git.sslavos.com";
-        ROOT_URL = "https://git.sslavos.com/";
+        DOMAIN   = "git.joaoroxo.com";
+        ROOT_URL = "https://git.joaoroxo.com/";
         HTTP_ADDRESS = "127.0.0.1";
         HTTP_PORT    = 3001;
 
@@ -23,14 +23,14 @@
     };
   };
 
-  services.nginx.virtualHosts."git.sslavos.com" = {
+  services.caddy.virtualHosts."git.joaoroxo.com" = {
     locations."/" = {
       proxyPass    = "http://127.0.0.1:3001/";
       proxyWebsockets = true;
     };
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."git.sslavos.com" = {
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."git.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 }

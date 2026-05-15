@@ -24,7 +24,7 @@
 
   users.users.aurea = {
     isNormalUser = true;
-    description = "Simão Lavos";
+    description = "João Roxo";
     extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
     packages = with pkgs; [
       kdePackages.kate

@@ -8,14 +8,14 @@
       MusicFolder = "/var/lib/navidrome/music";
     };
   };
-  services.nginx.virtualHosts."music.sslavos.com" = {
+  services.caddy.virtualHosts."music.joaoroxo.com" = {
     locations."/" = {
       proxyPass = "http://127.0.0.1:4533/";
       proxyWebsockets = true;
     };
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."music.sslavos.com" = {
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."music.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 }

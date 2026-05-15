@@ -13,7 +13,7 @@
     group = "cloudflared";
   };
 
-  services.nginx = {
+  services.caddy = {
     enable = true;
   };
 

@@ -14,7 +14,7 @@
     environmentFile = config.age.secrets.vw-secrets.path;
 
     config = {
-      DOMAIN = "https://vault.sslavos.com";
+      DOMAIN = "https://vault.joaoroxo.com";
       SIGNUPS_ALLOWED = false;
 
       ROCKET_ADDRESS = "127.0.0.1";
@@ -26,7 +26,7 @@
     };
   };
 
-  services.nginx.virtualHosts."vault.sslavos.com" = {
+  services.caddy.virtualHosts."vault.joaoroxo.com" = {
     locations."/" = {
       proxyPass = "http://127.0.0.1:8222/";
       proxyWebsockets = true;
@@ -37,7 +37,7 @@
     };
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."vault.sslavos.com" = {
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."vault.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 
