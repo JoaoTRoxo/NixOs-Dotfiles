@@ -4,6 +4,7 @@
   imports =
     
     [
+      ../../profiles/media.nix
       ../../profiles/network/aurea.nix
       ../../profiles/gitea.nix
       ../../profiles/hardware/aurea-hw.nix
