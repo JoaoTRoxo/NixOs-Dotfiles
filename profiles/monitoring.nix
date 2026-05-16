@@ -18,8 +18,8 @@
       server = {
         http_addr = "127.0.0.1";
         http_port = 3004;
-        domain = "monitor.sslavos.com";
-        root_url = "https://monitor.sslavos.com/";
+        domain = "monitor.joaoroxo.com";
+        root_url = "https://monitor.joaoroxo.com/";
       };
       security = {
         admin_user = "admin";
@@ -43,26 +43,19 @@
       port = 9100;
     };
     scrapeConfigs = [{
-      job_name = "zeno";
+      job_name = "aurea";
       static_configs = [{ targets = [ "127.0.0.1:9100" ]; }];
     }];
   };
 
-  services.nginx.virtualHosts."monitor.sslavos.com" = {
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:3004/";
-      proxyWebsockets = true;
-
+  services.caddy.virtualHosts."http://monitor.joaoroxo.com" = {
     extraConfig = ''
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
+      reverse_proxy 127.0.0.1:3004
       '';
-    };
+
   };
 
-  services.cloudflared.tunnels."113fd93b-5514-4d9e-86d2-7eb0c6d7ea9e".ingress."monitor.sslavos.com" = {
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."monitor.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 }

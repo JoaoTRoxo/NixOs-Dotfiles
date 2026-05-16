@@ -4,6 +4,7 @@
   imports =
     
     [
+      ../../profiles/monitoring.nix
       ../../profiles/media.nix
       ../../profiles/network/aurea.nix
       ../../profiles/gitea.nix
