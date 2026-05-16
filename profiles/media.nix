@@ -24,6 +24,9 @@
     service = "http://localhost:80";
   };
 
+
+
+
   # 4. The Automated Torrent/Media Stack (Docker/OCI)
   virtualisation.oci-containers.containers = {
 
@@ -66,6 +69,19 @@
       volumes = [
         "/home/aurea/data:/data"
         "/var/lib/sonarr:/config"
+      ];
+    };
+
+    jellyseerr = {
+      image = "ghcr.io/seerr-team/seerr:latest"; # active, well-maintained image
+      ports = [ "5055:5055" ];
+      environment = {
+        PUID = "1000";
+        PGID = "100";
+        TZ = "Europe/Lisbon"; # Matches your core timezone
+      };
+      volumes = [
+        "/var/lib/jellyseerr:/config" # Persistent state folder
       ];
     };
 
