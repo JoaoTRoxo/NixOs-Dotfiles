@@ -6,7 +6,7 @@
   networking.firewall.trustedInterfaces = [ "docker0" ];
 
 
-  networking.firewall.allowedTCPPorts = [ 8096 ];
+  networking.firewall.allowedTCPPorts = [ 8096 8080 ];
 
 
 
@@ -81,7 +81,7 @@
         TZ = "Europe/Lisbon"; # Matches your core timezone
       };
       volumes = [
-        "/var/lib/jellyseerr:/config" # Persistent state folder
+        "/var/lib/jellyseerr:/app/config" # Persistent state folder
       ];
     };
 
