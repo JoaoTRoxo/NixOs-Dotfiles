@@ -5,12 +5,10 @@
   virtualisation.oci-containers.backend = "docker";
   networking.firewall.trustedInterfaces = [ "docker0" ];
 
-  # 1. Jellyfin Media Server (Native)
-# 1. Jellyfin Media Server (Native)
-  services.jellyfin = {
-    enable = true;
-    openFirewall = true;
-  };
+
+  networking.firewall.allowedTCPPorts = [ 8096 ];
+
+
 
   # 2. Caddy Reverse Proxy
   services.caddy.virtualHosts."http://anime.joaoroxo.com" = {
@@ -28,6 +26,19 @@
 
   # 4. The Automated Torrent/Media Stack (Docker/OCI)
   virtualisation.oci-containers.containers = {
+
+    jellyfin = {
+      image = "lscr.io/linuxserver/jellyfin:latest";
+      ports = [ "8096:8096" ];
+      environment = {
+        PUID = "1000"; # Matches aurea
+        PGID = "100";  # Matches users group
+      };
+      volumes = [
+        "/var/lib/jellyfin-docker:/config" # Safe state directory for metadata
+        "/home/aurea/data:/data"           # Direct access to your media pool
+      ];
+    };
 
     qbittorrent = {
       image = "lscr.io/linuxserver/qbittorrent:latest";
