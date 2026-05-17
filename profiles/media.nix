@@ -102,5 +102,14 @@
       ];
     };
 
+    flaresolverr = {
+      image = "ghcr.io/flaresolverr/flaresolverr:latest";
+      ports = [ "8191:8191" ];
+      environment = {
+        LOG_LEVEL = "info";
+        TZ = "Europe/Lisbon";
+      };
+    };
+
   };
 }
