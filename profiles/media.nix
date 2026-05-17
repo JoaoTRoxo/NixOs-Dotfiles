@@ -18,11 +18,24 @@
 
   };
 
+    services.caddy.virtualHosts."http://requests.joaoroxo.com" = {
+    extraConfig = ''
+      reverse_proxy 127.0.0.1:5055
+      '';
+
+  };
+
 
   # 3. Cloudflare Tunnel Ingress
   services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."stream.joaoroxo.com" = {
     service = "http://localhost:80";
   };
+
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."requests.joaoroxo.com" = {
+    service = "http://localhost:80";
+  };
+
+
 
 
 
