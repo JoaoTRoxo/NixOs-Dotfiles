@@ -6,17 +6,25 @@
   networking.firewall.trustedInterfaces = [ "docker0" ];
 
 
-  networking.firewall.allowedTCPPorts = [ 8096 8080 ];
 
-
-
-  # 2. Caddy Reverse Proxy
-  services.caddy.virtualHosts."http://stream.joaoroxo.com" = {
+    services.caddy.virtualHosts."http://stream.joaoroxo.com" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:8096
       '';
 
   };
+
+
+
+
+  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."stream.joaoroxo.com" = {
+    service = "http://localhost:80";
+  };
+
+
+
+
+
 
     services.caddy.virtualHosts."http://requests.joaoroxo.com" = {
     extraConfig = ''
@@ -26,10 +34,7 @@
   };
 
 
-  # 3. Cloudflare Tunnel Ingress
-  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."stream.joaoroxo.com" = {
-    service = "http://localhost:80";
-  };
+
 
   services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."requests.joaoroxo.com" = {
     service = "http://localhost:80";
@@ -44,7 +49,7 @@
   virtualisation.oci-containers.containers = {
 
     jellyfin = {
-      image = "lscr.io/linuxserver/jellyfin:latest";
+      image = "lscr.io/linuxserver/jellyfin:10.10.7";
       ports = [ "8096:8096" ];
       environment = {
         PUID = "1000"; # Matches aurea
@@ -85,6 +90,16 @@
       ];
     };
 
+    radarr = {
+      image = "lscr.io/linuxserver/radarr:latest";
+      ports = [ "7878:7878" ];
+      environment = { PUID = "1000"; PGID = "100"; };
+      volumes = [
+        "/home/aurea/data:/data"
+        "/var/lib/radarr:/config"
+      ];
+    };
+
     jellyseerr = {
       image = "ghcr.io/seerr-team/seerr:latest"; # active, well-maintained image
       ports = [ "5055:5055" ];
@@ -116,7 +131,7 @@
     };
 
     byparr = {
-      image = "ghcr.io/thephaseless/byparr:latest";
+      image = "ghcr.io/flaresolverr/flaresolverr:latest";
       ports = [ "8191:8191" ];
       environment = {
         LOG_LEVEL = "info";
