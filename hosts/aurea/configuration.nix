@@ -14,6 +14,7 @@
       ../../profiles/adguard.nix
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
+      ../../profiles/obsidian.nix
     ];
 
   boot.loader.grub.enable = true;
