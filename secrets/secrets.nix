@@ -9,4 +9,5 @@ in {
     "grafana-secret-key.age".publicKeys = [ aurea roxo ];
     "grafana-secret.age".publicKeys = [ aurea roxo ];
     "searxng-secret.age".publicKeys = [ aurea roxo ];
+    "couchdb-secret.age".publicKeys = [ aurea roxo ];
     }
