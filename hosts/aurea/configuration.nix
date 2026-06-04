@@ -15,6 +15,7 @@
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
       ../../profiles/obsidian.nix
+      ../../profiles/sharkord.nix
     ];
 
   boot.loader.grub.enable = true;
