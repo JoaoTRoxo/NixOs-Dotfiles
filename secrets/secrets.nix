@@ -4,10 +4,7 @@ let
 	hosts = [ aurea roxo ];
 in {
     "vault-tunnel.age".publicKeys = [ aurea roxo ];
-    "vw-secrets.age".publicKeys = [ aurea roxo ];
-    "nextcloud-secret.age".publicKeys = [ aurea roxo ];
     "grafana-secret-key.age".publicKeys = [ aurea roxo ];
     "grafana-secret.age".publicKeys = [ aurea roxo ];
-    "searxng-secret.age".publicKeys = [ aurea roxo ];
     "couchdb-secret.age".publicKeys = [ aurea roxo ];
     }
