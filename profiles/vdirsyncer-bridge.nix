@@ -46,7 +46,7 @@
     [storage icloud]
     type = "caldav"
     url = "https://caldav.icloud.com/"
-    username = "YOUR_ICLOUD_EMAIL@icloud.com"
+    username = "joaotomas.roxo@gmail.com"
     password.fetch = ["command", "cat", "${config.age.secrets.icloud-app-pass.path}"]
     # Uncomment for 1-way iCloud -> Radicale only:
     # read_only = true
@@ -54,8 +54,8 @@
     [storage radicale]
     type = "caldav"
     # Localhost: same machine, skip Caddy/Cloudflare hop.
-    url = "http://127.0.0.1:5232/YOUR_RADICALE_USER/"
-    username = "YOUR_RADICALE_USER"
+    url = "http://127.0.0.1:5232/roxo/"
+    username = "roxo"
     password.fetch = ["command", "cat", "${config.age.secrets.radicale-bridge-pass.path}"]
   '';
 
