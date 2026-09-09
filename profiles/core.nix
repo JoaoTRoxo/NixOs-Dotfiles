@@ -64,10 +64,6 @@
     };
 
 
-    programs.bash = {
-      blesh.enable = true;
-    };
-
     services.openssh =  {
       enable = true;
       settings = {
