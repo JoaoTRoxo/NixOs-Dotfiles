@@ -8,4 +8,6 @@ in {
     "grafana-secret.age".publicKeys = [ aurea roxo ];
     "couchdb-secret.age".publicKeys = [ aurea roxo ];
     "radicale-users.age".publicKeys = [ aurea roxo ];
+    "icloud-app-pass.age".publicKeys = [ aurea roxo ];
+    "radicale-bridge-pass.age".publicKeys = [ aurea roxo ];
     }

@@ -16,6 +16,7 @@
       ../../profiles/tailscale.nix
       ../../profiles/obsidian.nix
       ../../profiles/radicale.nix
+      ../../profiles/vdirsyncer-bridge.nix
     ];
 
   boot.loader.grub.enable = true;
