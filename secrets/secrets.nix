@@ -7,4 +7,5 @@ in {
     "grafana-secret-key.age".publicKeys = [ aurea roxo ];
     "grafana-secret.age".publicKeys = [ aurea roxo ];
     "couchdb-secret.age".publicKeys = [ aurea roxo ];
+    "radicale-users.age".publicKeys = [ aurea roxo ];
     }
