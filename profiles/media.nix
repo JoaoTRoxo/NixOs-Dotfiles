@@ -63,6 +63,7 @@
 
     qbittorrent = {
       image = "lscr.io/linuxserver/qbittorrent:latest";
+      pull = "always";
       # We now expose the WebUI and P2P ports directly to the host
       ports = [ 
         "8080:8080"      # Web UI
@@ -82,6 +83,7 @@
 
     sonarr = {
       image = "lscr.io/linuxserver/sonarr:latest";
+      pull = "always";
       ports = [ "8989:8989" ];
       environment = { PUID = "1000"; PGID = "100"; };
       volumes = [
@@ -92,6 +94,7 @@
 
     radarr = {
       image = "lscr.io/linuxserver/radarr:latest";
+      pull = "always";
       ports = [ "7878:7878" ];
       environment = { PUID = "1000"; PGID = "100"; };
       volumes = [
@@ -102,6 +105,7 @@
 
     jellyseerr = {
       image = "ghcr.io/seerr-team/seerr:latest"; # active, well-maintained image
+      pull = "always";
       ports = [ "5055:5055" ];
       environment = {
         PUID = "1000";
@@ -115,6 +119,7 @@
 
     prowlarr = {
       image = "lscr.io/linuxserver/prowlarr:latest";
+      pull = "always";
       ports = [ "9696:9696" ];
       environment = { PUID = "1000"; PGID = "100"; };
       volumes = [ "/var/lib/prowlarr:/config" ];
@@ -122,6 +127,7 @@
 
     bazarr = {
       image = "lscr.io/linuxserver/bazarr:latest";
+      pull = "always";
       ports = [ "6767:6767" ];
       environment = { PUID = "1000"; PGID = "100"; };
       volumes = [
@@ -132,6 +138,7 @@
 
     byparr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
+      pull = "always";
       ports = [ "8191:8191" ];
       environment = {
         LOG_LEVEL = "info";
