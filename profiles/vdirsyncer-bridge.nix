@@ -37,6 +37,8 @@
     collections = [["home", "2B0A9076-A6C5-4301-90F5-0398D6615784", "home"], ["work", "A5827FAB-C12A-4619-B91D-738F2EF23EF2", "work"], ["app-tecnico-classes", "28ADC051-3F0F-497E-9849-16EB5A94229C", "app-tecnico-classes"], ["app-tecnico-evaluations", "92E42D16-0E3D-4BB2-833F-18045FA515B7", "app-tecnico-evaluations"]]
     conflict_resolution = "a wins"
     metadata = ["displayname", "color"]
+    # Auto-create missing Radicale collections without y/N prompt
+    implicit = "create"
 
     [storage icloud]
     type = "caldav"
