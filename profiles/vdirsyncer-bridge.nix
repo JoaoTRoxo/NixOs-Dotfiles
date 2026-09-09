@@ -32,14 +32,9 @@
     a = "icloud"
     b = "radicale"
     # Explicit mapping = no interactive `discover` needed.
-    # Left = iCloud UUID, right = short name created on Radicale.
-    # IDs from your `vdirsyncer discover` run on aurea.
-    collections = [
-      ["2B0A9076-A6C5-4301-90F5-0398D6615784", "home"],
-      ["A5827FAB-C12A-4619-B91D-738F2EF23EF2", "work"],
-      ["28ADC051-3F0F-497E-9849-16EB5A94229C", "app-tecnico-classes"],
-      ["92E42D16-0E3D-4BB2-833F-18045FA515B7", "app-tecnico-evaluations"],
-    ]
+    # Format: ["config_name", "icloud_uuid", "radicale_name"]
+    # NOTE: must stay on one line — vdirsyncer 0.20 fails on multiline lists.
+    collections = [["home", "2B0A9076-A6C5-4301-90F5-0398D6615784", "home"], ["work", "A5827FAB-C12A-4619-B91D-738F2EF23EF2", "work"], ["app-tecnico-classes", "28ADC051-3F0F-497E-9849-16EB5A94229C", "app-tecnico-classes"], ["app-tecnico-evaluations", "92E42D16-0E3D-4BB2-833F-18045FA515B7", "app-tecnico-evaluations"]]
     conflict_resolution = "a wins"
     metadata = ["displayname", "color"]
 
