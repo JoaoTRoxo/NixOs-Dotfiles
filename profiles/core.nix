@@ -26,10 +26,6 @@
     isNormalUser = true;
     description = "João Roxo";
     extraGroups = [ "networkmanager" "wheel" "libvirtd" ];
-    packages = with pkgs; [
-      kdePackages.kate
-      thunderbird
-    ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvbx6tMWqkVWBiWxZ1WpUn2kT3ZPT+4xUQgNV4K98Gx roxo@archlinux"
     ];
@@ -53,16 +49,8 @@
     python3
     ];
 
-
-    services.xserver = {
-      enable = true;
-      xkb = {
-        layout = "pt";
-        variant = "";
-        options = "caps:escape";
-      };
-    };
-
+    # Headless: no X/LightDM/Bluetooth (they used RAM on an 8 GB box for nothing).
+    # The console keeps the pt layout via console.keyMap above.
 
     services.openssh =  {
       enable = true;
@@ -82,6 +70,7 @@
       options = "--delete-older-than 14d";
     };
 
-    hardware.bluetooth.enable = true;
+    # The Oct 15-20 restart loop filled the journal to 3.9 GB
+    services.journald.settings.Journal.SystemMaxUse = "1G";
 
 }

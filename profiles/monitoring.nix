@@ -34,6 +34,12 @@
     "GF_SECURITY_SECRET_KEY__FILE=${config.age.secrets.grafana-secret-key.path}"
   ];
 
+  # The only disk is a ~2009 Samsung HD103SJ that logged SATA CRC errors on
+  # 2026-10-20: smartd logs SMART problems to the journal (and to logged-in
+  # terminals), and the exporter puts the attributes in Prometheus for Grafana.
+  services.smartd.enable = true;
+  environment.systemPackages = [ pkgs.smartmontools ];
+
   services.prometheus = {
     enable = true;
     port = 9090;
@@ -42,10 +48,21 @@
       enabledCollectors = [ "systemd" ];
       port = 9100;
     };
-    scrapeConfigs = [{
-      job_name = "aurea";
-      static_configs = [{ targets = [ "127.0.0.1:9100" ]; }];
-    }];
+    exporters.smartctl = {
+      enable = true;
+      listenAddress = "127.0.0.1";
+      port = 9633;
+    };
+    scrapeConfigs = [
+      {
+        job_name = "aurea";
+        static_configs = [{ targets = [ "127.0.0.1:9100" ]; }];
+      }
+      {
+        job_name = "smartctl";
+        static_configs = [{ targets = [ "127.0.0.1:9633" ]; }];
+      }
+    ];
   };
 
   services.caddy.virtualHosts."http://monitor.joaoroxo.com" = {

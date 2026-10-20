@@ -1,91 +1,46 @@
 { config, pkgs, ... }:
 
+# The automated torrent/media stack. Jellyfin itself runs natively (jellyfin.nix);
+# image updates are handled by the daily timer in docker.nix.
+let
+  env = {
+    PUID = "1000"; # aurea
+    PGID = "100";  # users
+    TZ = "Europe/Lisbon";
+  };
+in
 {
-  virtualisation.docker.enable = true;
-  virtualisation.oci-containers.backend = "docker";
-  networking.firewall.trustedInterfaces = [ "docker0" ];
-
-
-
-    services.caddy.virtualHosts."http://stream.joaoroxo.com" = {
-    extraConfig = ''
-      reverse_proxy 127.0.0.1:8096
-      '';
-
-  };
-
-
-
-
-  services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."stream.joaoroxo.com" = {
-    service = "http://localhost:80";
-  };
-
-
-
-
-
-
-    services.caddy.virtualHosts."http://requests.joaoroxo.com" = {
+  services.caddy.virtualHosts."http://requests.joaoroxo.com" = {
     extraConfig = ''
       reverse_proxy 127.0.0.1:5055
       '';
-
   };
-
-
-
 
   services.cloudflared.tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3".ingress."requests.joaoroxo.com" = {
     service = "http://localhost:80";
   };
 
-
-
-
-
-
-  # 4. The Automated Torrent/Media Stack (Docker/OCI)
   virtualisation.oci-containers.containers = {
-
-    jellyfin = {
-      image = "lscr.io/linuxserver/jellyfin:10.10.7";
-      ports = [ "8096:8096" ];
-      environment = {
-        PUID = "1000"; # Matches aurea
-        PGID = "100";  # Matches users group
-      };
-      volumes = [
-        "/var/lib/jellyfin-docker:/config" # Safe state directory for metadata
-        "/home/aurea/data:/data"           # Direct access to your media pool
-      ];
-    };
 
     qbittorrent = {
       image = "lscr.io/linuxserver/qbittorrent:latest";
-      pull = "always";
       # We now expose the WebUI and P2P ports directly to the host
-      ports = [ 
+      ports = [
         "8080:8080"      # Web UI
         "6881:6881"      # BitTorrent TCP
         "6881:6881/udp"  # BitTorrent UDP
       ];
-      environment = {
-        PUID = "1000"; # aurea user
-        PGID = "100";  # users group
-        WEBUI_PORT = "8080";
-      };
+      environment = env // { WEBUI_PORT = "8080"; };
       volumes = [
-        "/home/aurea/data:/data" 
+        "/home/aurea/data:/data"
         "/var/lib/qbittorrent:/config"
       ];
     };
 
     sonarr = {
       image = "lscr.io/linuxserver/sonarr:latest";
-      pull = "always";
       ports = [ "8989:8989" ];
-      environment = { PUID = "1000"; PGID = "100"; };
+      environment = env;
       volumes = [
         "/home/aurea/data:/data"
         "/var/lib/sonarr:/config"
@@ -94,9 +49,8 @@
 
     radarr = {
       image = "lscr.io/linuxserver/radarr:latest";
-      pull = "always";
       ports = [ "7878:7878" ];
-      environment = { PUID = "1000"; PGID = "100"; };
+      environment = env;
       volumes = [
         "/home/aurea/data:/data"
         "/var/lib/radarr:/config"
@@ -105,13 +59,8 @@
 
     jellyseerr = {
       image = "ghcr.io/seerr-team/seerr:latest"; # active, well-maintained image
-      pull = "always";
       ports = [ "5055:5055" ];
-      environment = {
-        PUID = "1000";
-        PGID = "100";
-        TZ = "Europe/Lisbon"; # Matches your core timezone
-      };
+      environment = env;
       volumes = [
         "/var/lib/jellyseerr:/app/config" # Persistent state folder
       ];
@@ -119,17 +68,15 @@
 
     prowlarr = {
       image = "lscr.io/linuxserver/prowlarr:latest";
-      pull = "always";
       ports = [ "9696:9696" ];
-      environment = { PUID = "1000"; PGID = "100"; };
+      environment = env;
       volumes = [ "/var/lib/prowlarr:/config" ];
     };
 
     bazarr = {
       image = "lscr.io/linuxserver/bazarr:latest";
-      pull = "always";
       ports = [ "6767:6767" ];
-      environment = { PUID = "1000"; PGID = "100"; };
+      environment = env;
       volumes = [
         "/home/aurea/data:/data"
         "/var/lib/bazarr:/config"
@@ -138,7 +85,6 @@
 
     byparr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
-      pull = "always";
       ports = [ "8191:8191" ];
       environment = {
         LOG_LEVEL = "info";

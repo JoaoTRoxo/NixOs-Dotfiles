@@ -1,5 +1,18 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
+let
+  # Radicale calendar name = config name -> iCloud calendar UUID
+  calendars = {
+    home = "2B0A9076-A6C5-4301-90F5-0398D6615784";
+    work = "A5827FAB-C12A-4619-B91D-738F2EF23EF2";
+    app-tecnico-classes = "28ADC051-3F0F-497E-9849-16EB5A94229C";
+    app-tecnico-evaluations = "92E42D16-0E3D-4BB2-833F-18045FA515B7";
+  };
+  # ["config_name", "icloud_uuid", "radicale_name"]; JSON on one line, since
+  # vdirsyncer 0.20+ rejects multi-line lists
+  collections = builtins.toJSON (lib.mapAttrsToList (name: uuid: [ name uuid name ]) calendars);
+  status = "/var/lib/vdirsyncer/status";
+in
 {
   age.secrets.icloud-app-pass = {
     file = ../secrets/icloud-app-pass.age;
@@ -26,19 +39,15 @@
   # pointing at /run/agenix/*.
   environment.etc."vdirsyncer/config".text = ''
     [general]
-    status_path = "/var/lib/vdirsyncer/status/"
+    status_path = "${status}/"
 
     [pair icloud_to_radicale]
     a = "icloud"
     b = "radicale"
     # Explicit mapping = no interactive `discover` needed.
-    # Format: ["config_name", "icloud_uuid", "radicale_name"]
-    # NOTE: must stay on one line — vdirsyncer 0.20 fails on multiline lists.
-    collections = [["home", "2B0A9076-A6C5-4301-90F5-0398D6615784", "home"], ["work", "A5827FAB-C12A-4619-B91D-738F2EF23EF2", "work"], ["app-tecnico-classes", "28ADC051-3F0F-497E-9849-16EB5A94229C", "app-tecnico-classes"], ["app-tecnico-evaluations", "92E42D16-0E3D-4BB2-833F-18045FA515B7", "app-tecnico-evaluations"]]
+    collections = ${collections}
     conflict_resolution = "a wins"
     metadata = ["displayname", "color"]
-    # Auto-create missing Radicale collections without y/N prompt
-    implicit = "create"
 
     [storage icloud]
     type = "caldav"
@@ -58,10 +67,45 @@
 
   systemd.services.vdirsyncer-sync = {
     description = "vdirsyncer iCloud <-> Radicale sync";
-    after = [ "network-online.target" ];
+    after = [ "network-online.target" "radicale.service" ];
     wants = [ "network-online.target" ];
+    path = [ pkgs.curl ];
     script = ''
-      mkdir -p /var/lib/vdirsyncer/status
+      mkdir -p ${status}
+
+      # One-time: the sync status is from 2026-09-09, before the Radicale
+      # calendars were deleted (and some recreated) in the web UI. Syncing
+      # against it could push those deletions to iCloud, so start over with a
+      # fresh merge, which never deletes anything.
+      if [ ! -e /var/lib/vdirsyncer/.status-reset-2026-10 ]; then
+        mv -T ${status} ${status}.2026-09-09
+        mkdir -p ${status}
+        touch /var/lib/vdirsyncer/.status-reset-2026-10
+      fi
+
+      # vdirsyncer 0.20+ has no `implicit = "create"`. A calendar missing on
+      # Radicale makes every collection fail (404 for it, "Server disconnected"
+      # for the rest), so recreate it and drop its status so it refills from iCloud.
+      pass=$(cat ${config.age.secrets.radicale-bridge-pass.path})
+      pass=''${pass//\\/\\\\}
+      pass=''${pass//\"/\\\"}
+      for c in ${toString (lib.attrNames calendars)}; do
+        url=http://127.0.0.1:5232/roxo/$c/
+        code=$(printf 'user = "roxo:%s"\n' "$pass" |
+          curl -s -K - -o /dev/null -w '%{http_code}' -X PROPFIND -H 'Depth: 0' "$url")
+        if [ "$code" = 404 ]; then
+          echo "Radicale calendar $c is missing, recreating it"
+          printf 'user = "roxo:%s"\n' "$pass" | curl -sf -K - -X MKCALENDAR "$url"
+          rm -f ${status}/icloud_to_radicale/$c.*
+        fi
+      done
+
+      # A fresh status (first run, or after the reset above) needs one discover
+      # first; with every calendar already present on both sides it won't prompt.
+      if [ ! -e ${status}/icloud_to_radicale.collections ]; then
+        ${pkgs.vdirsyncer}/bin/vdirsyncer -c /etc/vdirsyncer/config discover icloud_to_radicale < /dev/null
+      fi
+
       ${pkgs.vdirsyncer}/bin/vdirsyncer -c /etc/vdirsyncer/config metasync
       ${pkgs.vdirsyncer}/bin/vdirsyncer -c /etc/vdirsyncer/config sync
     '';

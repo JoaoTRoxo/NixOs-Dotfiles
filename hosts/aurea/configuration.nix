@@ -5,13 +5,15 @@
     
     [
       ../../profiles/monitoring.nix
+      ../../profiles/docker.nix
       ../../profiles/media.nix
+      ../../profiles/jellyfin.nix
       ../../profiles/network/aurea.nix
       ../../profiles/gitea.nix
       ../../profiles/hardware/aurea-hw.nix
       ../../profiles/cloudflare-tunnel.nix
-      ../../profiles/portfolio.nix
       ../../profiles/adguard.nix
+      ../../profiles/backup.nix
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
       ../../profiles/obsidian.nix
@@ -29,7 +31,9 @@
       HandleLidSwitch = "ignore";
       HandleLidSwitchExternalPower = "ignore";
       HandleLidSwitchDocked = "ignore";
-      HandlePowerKey = "ignore";
+      # A short press shuts down cleanly; with "ignore" the only way off was
+      # holding it (a hard power-off, as on 2026-10-20)
+      HandlePowerKey = "poweroff";
     };
   };
 

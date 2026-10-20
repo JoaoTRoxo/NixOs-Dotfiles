@@ -7,9 +7,8 @@
 
     settings = {
       server = {
-        DOMAIN   = "git.joaoroxo.com";
         ROOT_URL = "https://git.joaoroxo.com/";
-        HTTP_ADDRESS = "127.0.0.1";
+        HTTP_ADDR    = "127.0.0.1";
         HTTP_PORT    = 3001;
 
         DISABLE_SSH      = false;
