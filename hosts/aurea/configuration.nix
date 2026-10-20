@@ -14,6 +14,8 @@
       ../../profiles/cloudflare-tunnel.nix
       ../../profiles/adguard.nix
       ../../profiles/backup.nix
+      ../../profiles/alerts.nix
+      ../../profiles/recyclarr.nix
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
       ../../profiles/obsidian.nix

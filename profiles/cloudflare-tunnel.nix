@@ -15,6 +15,13 @@
 
   services.caddy = {
     enable = true;
+    # cloudflared connects from localhost and sends the visitor's address in
+    # X-Forwarded-For; trust it so Jellyfin & co. see real client IPs instead of 127.0.0.1
+    globalConfig = ''
+      servers {
+        trusted_proxies static 127.0.0.1/32 ::1/128
+      }
+    '';
   };
 
   environment.systemPackages = [ pkgs.cloudflared ];

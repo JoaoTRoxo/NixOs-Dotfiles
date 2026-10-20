@@ -6,6 +6,7 @@
 # Media isn't backed up: it can be downloaded again.
 let
   staging = "/var/backup/aurea";
+  laptopKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEhcswCE3bAp2cKDa4vwnJQ2hKWIPJBQyvFibolGhpCC roxo@archlinux aurea-backup";
   sources = {
     gitea = "/var/lib/gitea";
     grafana = "/var/lib/grafana";
@@ -67,8 +68,11 @@ in
     };
   };
 
+  # profiles/alerts.nix warns if this key stops showing up in the sshd log
+  alerts.backupKey = laptopKey;
+
   # The laptop's backup key: read-only rsync of the staging directory, nothing else
   users.users.root.openssh.authorizedKeys.keys = [
-    ''command="${pkgs.rrsync}/bin/rrsync -ro ${staging}",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEhcswCE3bAp2cKDa4vwnJQ2hKWIPJBQyvFibolGhpCC roxo@archlinux aurea-backup''
+    ''command="${pkgs.rrsync}/bin/rrsync -ro ${staging}",restrict ${laptopKey}''
   ];
 }

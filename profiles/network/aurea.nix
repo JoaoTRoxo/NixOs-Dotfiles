@@ -30,8 +30,21 @@
     serviceConfig.Type = "oneshot";
     script = ''
       count=/run/nic-watchdog.failures
+      # Telegram can't be reached while offline: leave a note that profiles/alerts.nix sends later
+      pending=/var/lib/server-alerts/pending
       if ping -q -c 3 -W 2 -I enp1s0 192.168.100.1 > /dev/null 2>&1; then
-        if [ -e $count ]; then echo "gateway reachable again"; rm -f $count; fi
+        if [ -e $count ]; then
+          failures=$(cat $count)
+          echo "gateway reachable again after $failures min"
+          if [ "$failures" -ge 2 ]; then
+            did="it came back on its own"
+            if [ "$failures" -ge 3 ]; then did="the watchdog bounced the link"; fi
+            if [ "$failures" -ge 6 ]; then did="the watchdog bounced the link and reloaded the atl1 driver"; fi
+            mkdir -p $pending
+            echo "🌐 aurea's network was down for about $failures min; $did." > "$pending/network-$(date +%s)"
+          fi
+          rm -f $count
+        fi
         exit 0
       fi
 
@@ -53,6 +66,8 @@
         *)
           if [ $failures -ge 15 ] && [ "$(cut -d. -f1 /proc/uptime)" -gt 3600 ]; then
             echo "still offline, rebooting"
+            mkdir -p /var/lib/server-alerts
+            echo "gateway unreachable for $failures min, link bounce and driver reload didn't help" > /var/lib/server-alerts/watchdog-reboot
             systemctl reboot
           fi
           ;;

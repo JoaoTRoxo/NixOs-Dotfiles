@@ -10,4 +10,7 @@ in {
     "radicale-users.age".publicKeys = [ aurea roxo ];
     "icloud-app-pass.age".publicKeys = [ aurea roxo ];
     "radicale-bridge-pass.age".publicKeys = [ aurea roxo ];
+    "telegram-alerts.age".publicKeys = [ aurea roxo ];
+    "sonarr-api-key.age".publicKeys = [ aurea roxo ];
+    "radarr-api-key.age".publicKeys = [ aurea roxo ];
     }
