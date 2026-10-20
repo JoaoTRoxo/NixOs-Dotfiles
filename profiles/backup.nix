@@ -22,7 +22,7 @@ let
     nixos-config = "/home/aurea/NixOs-Dotfiles";
   };
   # Regenerated or re-downloaded on their own
-  excludes = [ "cache/" "log/" "logs/" "transcodes/" "MediaCover/" "Backups/" "*-wal" "*-shm" "*-journal" ];
+  excludes = [ "cache/" "log/" "logs/" "transcodes/" "MediaCover/" "Backups/" ".Radicale.cache/" "*-wal" "*-shm" "*-journal" ];
 in
 {
   systemd.services.backup-snapshot = {
@@ -40,7 +40,8 @@ in
 
       ${lib.concatStrings (lib.mapAttrsToList (name: src: ''
         if [ -d ${src} ]; then
-          rsync -a --delete --delete-excluded --bwlimit=20m ${lib.concatMapStringsSep " " (e: "--exclude='${e}'") excludes} ${src}/ ${staging}/${name}/
+          rsync -a --delete --delete-excluded --bwlimit=20m ${lib.concatMapStringsSep " " (e: "--exclude='${e}'") excludes} ${src}/ ${staging}/${name}/ ||
+            [ $? = 24 ] # files vanished mid-copy (temp files of a running service): fine
         fi
       '') sources)}
 
