@@ -19,16 +19,23 @@ bot = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bot)
 
 ADMIN = {"id": 1, "displayName": "aurea"}
+# What Seerr's schema takes in a request's update (never null)
+UPDATE = {"is4k": (bool, "boolean"), "serverId": (int, "number"),
+          "profileId": (int, "number"), "languageProfileId": (int, "number"),
+          "rootFolder": (str, "string")}
 
 
-def request(rid, kind, status, seasons=(), tmdb=100):
+def request(rid, kind, status, seasons=(), tmdb=100, **fields):
+    """A request, left to Seerr's default server, profile and folder unless
+    `fields` say otherwise."""
     return {
         "id": rid, "type": kind, "status": status, "is4k": False,
-        "serverId": 0, "profileId": 7, "rootFolder": "/tv",
-        "languageProfileId": None, "tags": [], "modifiedBy": None,
+        "serverId": None, "profileId": None, "rootFolder": None,
+        "languageProfileId": None, "tags": None, "modifiedBy": None,
         "media": {"tmdbId": tmdb},
         "seasons": [{"seasonNumber": n} for n in seasons],
         "requestedBy": {"id": 5, "displayName": "Nando <3"},
+        **fields,
     }
 
 
@@ -87,6 +94,10 @@ class Fake(BaseHTTPRequestHandler):
         if r["status"] != bot.PENDING:
             return self.reply(409, {"message": "Only pending requests"})
         if method == "PUT":
+            for key, (kind, name) in UPDATE.items():
+                if key in body and not isinstance(body[key], kind):
+                    return self.reply(400, {
+                        "message": f"request/body/{key} must be {name}"})
             world["put"].append(body)
             r["seasons"] = [{"seasonNumber": n} for n in body["seasons"]]
             return self.reply(200, r)
@@ -159,7 +170,7 @@ class Test(unittest.TestCase):
         keys = sent[0]["reply_markup"]["inline_keyboard"]
         self.assertEqual([b["callback_data"] for b in keys[0]],
                          ["a:2", "d:2"])
-        self.assertEqual(keys[1][0]["callback_data"], "p:2:3f")
+        self.assertEqual(keys[1][0]["callback_data"], "p:2:0")
         self.assertEqual(keys[2][0]["url"], "https://requests.example/tv/100")
         # Nothing new: nothing sent
         self.world["calls"].clear()
@@ -184,26 +195,41 @@ class Test(unittest.TestCase):
         self.bot.look()
         self.add(2, "tv", bot.PENDING, seasons=range(1, 7))
         self.bot.look()
-        self.press("p:2:3f")
+        # The picker starts with none chosen
+        self.press("p:2:0")
         picker = self.calls("editMessageReplyMarkup")[0]["reply_markup"]
         rows = picker["inline_keyboard"]
-        self.assertEqual(rows[0][0], {"text": "✅ S1",
-                                      "callback_data": "p:2:3e"})
-        self.assertEqual(rows[-1][0]["text"], "✅ Approve 6 seasons")
+        self.assertEqual(rows[0][0], {"text": "◻️ S1",
+                                      "callback_data": "p:2:1"})
+        self.assertEqual(rows[-1][0]["text"], "Choose a season")
         self.press("p:2:1")
         rows = self.calls("editMessageReplyMarkup")[0]["reply_markup"][
             "inline_keyboard"]
+        self.assertEqual(rows[0][0]["text"], "✅ S1")
         self.assertEqual(rows[0][1]["text"], "◻️ S2")
         self.assertEqual(rows[-1][0], {"text": "✅ Approve 1 season",
                                        "callback_data": "k:2:1"})
         self.press("k:2:1")
+        # What Seerr left to its defaults stays out (it refuses null)
         self.assertEqual(self.world["put"], [{
-            "mediaType": "tv", "seasons": [1], "is4k": False, "serverId": 0,
-            "profileId": 7, "rootFolder": "/tv", "languageProfileId": None,
-            "tags": []}])
+            "mediaType": "tv", "seasons": [1], "is4k": False}])
         self.assertEqual(self.world["requests"][2]["status"], bot.APPROVED)
         self.assertTrue(self.calls("editMessageCaption")[0]["caption"]
                         .endswith("✅ Approved by aurea: season 1"))
+
+    def test_chosen_seasons_keep_the_server(self):
+        self.bot.look()
+        self.add(2, "tv", bot.PENDING, seasons=[4, 5, 6], serverId=0,
+                 profileId=7, rootFolder="/tv", languageProfileId=1,
+                 tags=[3])
+        self.bot.look()
+        self.press("k:2:5")
+        self.assertEqual(self.world["put"], [{
+            "mediaType": "tv", "seasons": [4, 6], "is4k": False,
+            "serverId": 0, "profileId": 7, "rootFolder": "/tv",
+            "languageProfileId": 1, "tags": [3]}])
+        self.assertTrue(self.calls("editMessageCaption")[0]["caption"]
+                        .endswith("✅ Approved by aurea: seasons 4, 6"))
 
     def test_no_season_chosen(self):
         self.bot.look()
