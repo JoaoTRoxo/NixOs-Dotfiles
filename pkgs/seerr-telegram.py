@@ -125,11 +125,13 @@ class Seerr:
     def keep_seasons(self, request, seasons):
         """Narrow a pending show's request to `seasons`. Seerr sets what
         it's sent, so the request's server, profile and folder go back as
-        they are."""
+        they are. One left to Seerr's defaults is null, which Seerr refuses:
+        left out, it stays null."""
         body = {"mediaType": "tv", "seasons": sorted(seasons)}
         for key in ("is4k", "serverId", "profileId", "rootFolder",
                     "languageProfileId", "tags"):
-            body[key] = request.get(key)
+            if request.get(key) is not None:
+                body[key] = request[key]
         self.send(f"/request/{request['id']}", body, method="PUT")
 
 
@@ -224,10 +226,10 @@ class Bot:
         rows = [[{"text": "✅ Approve", "callback_data": f"a:{rid}"},
                  {"text": "❌ Decline", "callback_data": f"d:{rid}"}]]
         if len(season_numbers(request)) > 1:
-            everything = (1 << len(season_numbers(request))) - 1
             rows[0][0]["text"] = "✅ Approve all"
+            # None chosen yet: a tap on a season chooses it
             rows.append([{"text": "✏️ Choose seasons",
-                          "callback_data": f"p:{rid}:{everything:x}"}])
+                          "callback_data": f"p:{rid}:0"}])
         return {"inline_keyboard": rows + self.link(request)}
 
     def picker(self, request, chosen):
