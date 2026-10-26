@@ -57,6 +57,12 @@
           {
             trash_id = "72dae194fc92bf828f32cde7744e51a1"; # WEB-1080p
             reset_unmatched_scores.enabled = true;
+            # Shows from before streaming (Lost) have no WEB releases, only Blu-ray,
+            # so WEB-only grabbed nothing. Blu-ray 1080p in the same tier: no upgrade
+            # churn between the two, and WEB still wins on custom format score.
+            qualities = [
+              { name = "WEB 1080p"; qualities = [ "WEBDL-1080p" "WEBRip-1080p" "Bluray-1080p" ]; }
+            ];
           }
           {
             # TRaSH's anime release ranking without the Remux tier and upgrade
