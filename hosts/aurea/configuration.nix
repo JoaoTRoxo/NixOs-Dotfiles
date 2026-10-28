@@ -25,8 +25,10 @@
     ];
 
   boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  # By id, not /dev/sda: names move when a disk is added, and on 2026-10-28 the
+  # second disk took sda, which would have put GRUB on it
+  boot.loader.grub.device = "/dev/disk/by-id/ata-SAMSUNG_HD103SJ_S246J9EB918624";
+  boot.loader.grub.useOSProber = false;
 
   #Don't shutdown with lid close
   services.logind.settings = {

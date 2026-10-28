@@ -8,6 +8,13 @@
 let
   state = "/var/lib/server-alerts";
 
+  # Disks to watch, as name=device. By id, because /dev/sdX names move when a
+  # disk is added: on 2026-10-28 the second disk took sda.
+  disks = lib.concatStringsSep " " (lib.mapAttrsToList (name: device: "${name}=${device}") {
+    system = "/dev/disk/by-id/ata-SAMSUNG_HD103SJ_S246J9EB918624";
+    recordings = "/dev/disk/by-id/ata-SAMSUNG_HD501LJ_S0MUJ1MP911549";
+  });
+
   notify = pkgs.writeShellApplication {
     name = "telegram-notify";
     runtimeInputs = [ pkgs.curl ];
@@ -74,21 +81,28 @@ let
         problem disk-full "💾 aurea: / is $use% full ($(df -h --output=avail / | tail -n 1 | tr -d ' ') free)"
       fi
 
-      # SMART: overall health, and any growth in the counters that matter
-      smart=$(smartctl -j -H -A /dev/sda || true)
-      if [ "$(jq -r '.smart_status.passed' <<< "$smart")" = false ]; then
-        problem smart-failing "🧲 aurea: the disk's SMART health check FAILED. Back up and replace it."
-      fi
-      for attr in Reallocated_Sector_Ct Current_Pending_Sector Offline_Uncorrectable UDMA_CRC_Error_Count; do
-        value=$(jq -r --arg a "$attr" '.ata_smart_attributes.table[]? | select(.name == $a) | .raw.value' <<< "$smart")
-        [ -n "$value" ] || continue
-        before=$(cat "${state}/smart-$attr" 2>/dev/null || echo "$value")
-        if [ "$value" -gt "$before" ]; then
-          hint="the drive is growing bad sectors"
-          if [ "$attr" = UDMA_CRC_Error_Count ]; then hint="transmission errors: SATA cable or port"; fi
-          telegram-notify "🧲 aurea: disk $attr went $before → $value ($hint)" || continue
+      # SMART, per disk: overall health, and any growth in the counters that matter
+      for disk in ${disks}; do
+        name=''${disk%%=*} device=''${disk#*=}
+        if [ ! -e "$device" ]; then
+          problem "disk-missing-$name" "🧲 aurea: the $name disk is missing ($device)"
+          continue
         fi
-        echo "$value" > "${state}/smart-$attr"
+        smart=$(smartctl -j -H -A "$device" || true)
+        if [ "$(jq -r '.smart_status.passed' <<< "$smart")" = false ]; then
+          problem "smart-failing-$name" "🧲 aurea: the $name disk's SMART health check FAILED. Back up and replace it."
+        fi
+        for attr in Reallocated_Sector_Ct Current_Pending_Sector Offline_Uncorrectable UDMA_CRC_Error_Count; do
+          value=$(jq -r --arg a "$attr" '.ata_smart_attributes.table[]? | select(.name == $a) | .raw.value' <<< "$smart")
+          [ -n "$value" ] || continue
+          before=$(cat "${state}/smart-$name-$attr" 2>/dev/null || echo "$value")
+          if [ "$value" -gt "$before" ]; then
+            hint="the drive is growing bad sectors"
+            if [ "$attr" = UDMA_CRC_Error_Count ]; then hint="transmission errors: SATA cable or port"; fi
+            telegram-notify "🧲 aurea: $name disk $attr went $before → $value ($hint)" || continue
+          fi
+          echo "$value" > "${state}/smart-$name-$attr"
+        done
       done
 
       # SATA link / I/O errors in the kernel log since the last run
@@ -190,12 +204,15 @@ in
       path = [ notify pkgs.smartmontools pkgs.jq ];
       serviceConfig.Type = "oneshot";
       script = ''
-        crc=$(smartctl -j -A /dev/sda | jq -r '.ata_smart_attributes.table[]? | select(.name == "UDMA_CRC_Error_Count") | .raw.value')
+        crc=""
+        for disk in ${disks}; do
+          crc="$crc ''${disk%%=*} $(smartctl -j -A "''${disk#*=}" | jq -r '.ata_smart_attributes.table[]? | select(.name == "UDMA_CRC_Error_Count") | .raw.value')"
+        done
         failed=$(systemctl list-units --state=failed --plain --no-legend | wc -l)
         telegram-notify "📊 aurea weekly
       up $(( $(cut -d. -f1 /proc/uptime) / 86400 )) days, $failed failed units
       disk $(df -h --output=pcent / | tail -n 1 | tr -d ' ') used, $(df -h --output=avail / | tail -n 1 | tr -d ' ') free
-      SATA CRC errors (total): $crc
+      SATA CRC errors (total):$crc
       last backup snapshot: $(cat /var/backup/aurea/.complete 2>/dev/null || echo never)"
       '';
     };
