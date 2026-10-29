@@ -22,6 +22,7 @@
       ../../profiles/obsidian.nix
       ../../profiles/radicale.nix
       ../../profiles/vdirsyncer-bridge.nix
+      ../../profiles/jrxd.nix
     ];
 
   boot.loader.grub.enable = true;

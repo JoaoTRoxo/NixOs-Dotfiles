@@ -75,11 +75,15 @@ let
         esac
       done < <(systemctl show --property=Id,NRestarts '*.service'; echo)
 
-      # Disk space
-      use=$(df --output=pcent / | tail -n 1 | tr -dc 0-9)
-      if [ "$use" -ge 90 ]; then
-        problem disk-full "💾 aurea: / is $use% full ($(df -h --output=avail / | tail -n 1 | tr -d ' ') free)"
-      fi
+      # Disk space: the system disk, and the recordings disk while it's mounted
+      # (jrxd pauses below 20 GB free, which on that disk is about 96% full)
+      for mount in / /srv/jrx; do
+        [ "$(df --output=target "$mount" 2>/dev/null | tail -n 1)" = "$mount" ] || continue
+        use=$(df --output=pcent "$mount" | tail -n 1 | tr -dc 0-9)
+        if [ "$use" -ge 90 ]; then
+          problem "disk-full$(tr / - <<< "''${mount%/}")" "💾 aurea: $mount is $use% full ($(df -h --output=avail "$mount" | tail -n 1 | tr -d ' ') free)"
+        fi
+      done
 
       # SMART, per disk: overall health, and any growth in the counters that matter.
       # The counters go by id, because drives name them differently: the

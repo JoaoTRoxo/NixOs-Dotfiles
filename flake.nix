@@ -15,6 +15,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # JRX, for its recorder jrxd (profiles/jrxd.nix). Not a flake: its NixOS
+    # module and package are plain files in the repo. Private, so over SSH
+    jrx = {
+      url = "git+ssh://git@github.com/JoaoTRoxo/jrx.git?ref=main";
+      flake = false;
+    };
+
   };
 
     outputs = { self, nixpkgs, ...}@inputs:
