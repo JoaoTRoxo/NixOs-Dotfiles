@@ -81,7 +81,9 @@ let
         problem disk-full "💾 aurea: / is $use% full ($(df -h --output=avail / | tail -n 1 | tr -d ' ') free)"
       fi
 
-      # SMART, per disk: overall health, and any growth in the counters that matter
+      # SMART, per disk: overall health, and any growth in the counters that matter.
+      # The counters go by id, because drives name them differently: the
+      # recordings disk calls 197 Total_Pending_Sectors, not Current_Pending_Sector
       for disk in ${disks}; do
         name=''${disk%%=*} device=''${disk#*=}
         if [ ! -e "$device" ]; then
@@ -92,13 +94,13 @@ let
         if [ "$(jq -r '.smart_status.passed' <<< "$smart")" = false ]; then
           problem "smart-failing-$name" "🧲 aurea: the $name disk's SMART health check FAILED. Back up and replace it."
         fi
-        for attr in Reallocated_Sector_Ct Current_Pending_Sector Offline_Uncorrectable UDMA_CRC_Error_Count; do
-          value=$(jq -r --arg a "$attr" '.ata_smart_attributes.table[]? | select(.name == $a) | .raw.value' <<< "$smart")
-          [ -n "$value" ] || continue
+        # 5 reallocated, 197 pending, 198 offline uncorrectable, 199 SATA CRC errors
+        for id in 5 197 198 199; do
+          read -r attr value < <(jq -r --argjson i "$id" '.ata_smart_attributes.table[]? | select(.id == $i) | "\(.name) \(.raw.value)"' <<< "$smart") || continue
           before=$(cat "${state}/smart-$name-$attr" 2>/dev/null || echo "$value")
           if [ "$value" -gt "$before" ]; then
             hint="the drive is growing bad sectors"
-            if [ "$attr" = UDMA_CRC_Error_Count ]; then hint="transmission errors: SATA cable or port"; fi
+            if [ "$id" = 199 ]; then hint="transmission errors: SATA cable or port"; fi
             telegram-notify "🧲 aurea: $name disk $attr went $before → $value ($hint)" || continue
           fi
           echo "$value" > "${state}/smart-$name-$attr"
@@ -206,7 +208,7 @@ in
       script = ''
         crc=""
         for disk in ${disks}; do
-          crc="$crc ''${disk%%=*} $(smartctl -j -A "''${disk#*=}" | jq -r '.ata_smart_attributes.table[]? | select(.name == "UDMA_CRC_Error_Count") | .raw.value')"
+          crc="$crc ''${disk%%=*} $(smartctl -j -A "''${disk#*=}" | jq -r '.ata_smart_attributes.table[]? | select(.id == 199) | .raw.value')"
         done
         failed=$(systemctl list-units --state=failed --plain --no-legend | wc -l)
         telegram-notify "📊 aurea weekly
