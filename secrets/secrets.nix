@@ -13,4 +13,5 @@ in {
     "telegram-alerts.age".publicKeys = [ aurea roxo ];
     "sonarr-api-key.age".publicKeys = [ aurea roxo ];
     "radarr-api-key.age".publicKeys = [ aurea roxo ];
+    "jrxd-binance-key.age".publicKeys = [ aurea roxo ];
     }

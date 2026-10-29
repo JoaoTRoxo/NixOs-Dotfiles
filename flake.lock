@@ -40,6 +40,23 @@
         "type": "github"
       }
     },
+    "jrx": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793146141,
+        "narHash": "sha256-7eM/rJl9gRz/7sdLf/iUxLBH3DH+DykpFYugbHOmJJM=",
+        "ref": "main",
+        "rev": "3d604beb0529225109af6f071bdacd7661f93bba",
+        "revCount": 421,
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/jrx.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/jrx.git"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1792210252,
@@ -58,6 +75,7 @@
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager",
+        "jrx": "jrx",
         "nixpkgs": "nixpkgs"
       }
     }
