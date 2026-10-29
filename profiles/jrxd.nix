@@ -5,6 +5,16 @@
 # then rebuild. `jrxd list /srv/jrx/raw <YYYY-MM-DD>` shows a day's files and gaps
 let
   dataDir = "/srv/jrx/raw";
+  hyperliquidStreams = [ "trades" "bbo" "l2Book" "l2Book-fast" ];
+  # HIP-3 markets, the perps builders deploy on Hyperliquid: the top 20 by 24 h
+  # volume on 2026-10-29 (83% of HIP-3 volume). A fixed list, so each market's
+  # history stays unbroken: add markets as they matter, drop only delisted ones
+  hip3Markets = [
+    "xyz:SKHX" "xyz:GOOGL" "xyz:XYZ100" "xyz:CL" "xyz:SP500"
+    "xyz:MU" "xyz:SOXL" "xyz:SKHY" "xyz:SNDK" "xyz:SILVER"
+    "xyz:DRAM" "xyz:BRENTOIL" "xyz:MSFT" "xyz:SPCX" "xyz:SMSN"
+    "xyz:INTC" "xyz:META" "xyz:NVDA" "xyz:MRVL" "xyz:AMD"
+  ];
 in
 {
   imports = [ "${inputs.jrx}/packaging/nix/jrxd-service.nix" ];
@@ -28,11 +38,12 @@ in
     enable = true;
     inherit dataDir;
     binanceApiKeyFile = config.age.secrets.jrxd-binance-key.path;
+    # Hyperliquid instruments of a stream share one connection (jrx #201)
     settings.instruments = [
-      { id = "hyperliquid-mainnet:BTC"; streams = [ "trades" "bbo" "l2Book" "l2Book-fast" ]; }
+      { id = "hyperliquid-mainnet:BTC"; streams = hyperliquidStreams; }
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
       { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" ]; }
-    ];
+    ] ++ map (market: { id = "hyperliquid-mainnet:${market}"; streams = hyperliquidStreams; }) hip3Markets;
   };
 
   # jrxd list and print on the command line, and the recordings readable by
