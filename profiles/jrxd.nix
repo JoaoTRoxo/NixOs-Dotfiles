@@ -50,6 +50,11 @@ in
     };
   };
 
+  # jrxd list and print on the command line, and the recordings readable by
+  # the aurea user without sudo (dataDir is 0750 jrxd:jrxd)
+  environment.systemPackages = [ config.services.jrxd.package ];
+  users.users.aurea.extraGroups = [ "jrxd" ];
+
   # Receive times are only as good as the clock. Unlike timesyncd, chrony tells
   # the kernel how far off the clock may be, and jrxd records that
   services.chrony.enable = true;
