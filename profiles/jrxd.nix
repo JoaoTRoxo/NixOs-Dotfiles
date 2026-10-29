@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, inputs, ... }:
 
 # jrxd, JRX's recorder of public market data (ADR-033 in JoaoTRoxo/jrx), writes
 # raw capture files to the second disk. To update it: nix flake update jrx,
@@ -33,21 +33,6 @@ in
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
       { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" ]; }
     ];
-  };
-
-  # The module makes dataDir with tmpfiles, which can run before a nofail mount
-  # (it doesn't hold up the boot), and jrxd's sandbox fails to start without it.
-  # So make it on the recording disk once that's mounted, before each start. Not
-  # an ExecStartPre=+: that still runs in the sandbox, and fails the same way
-  systemd.services.jrxd-data-dir = {
-    description = "Make jrxd's data directory on the recording disk";
-    requiredBy = [ "jrxd.service" ];
-    before = [ "jrxd.service" ];
-    unitConfig.RequiresMountsFor = [ dataDir ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.coreutils}/bin/install -d -o jrxd -g jrxd -m 0750 ${dataDir}";
-    };
   };
 
   # jrxd list and print on the command line, and the recordings readable by
