@@ -637,10 +637,14 @@ def calendar(cfg):
     headers = {"Authorization": "Basic " + auth, "Depth": "1",
                "Content-Type": "application/xml; charset=utf-8",
                "Accept": "application/xml"}
+    # Expanding a week of a calendar can take Radicale on aurea's Q6600
+    # longer than fetch's usual 20 s
+    timeout = cal.get("timeout", 120)
     events = []
     for name, about in cal["calendars"].items():
         url = cal["url"].rstrip("/") + f"/{name}/"
-        reply = fetch(url, headers, body.encode(), "REPORT", raw=True)
+        reply = fetch(url, headers, body.encode(), "REPORT", timeout=timeout,
+                      raw=True)
         for data in ET.fromstring(reply).iterfind(".//C:calendar-data", NS):
             for event in parse_events(data.text or "", zone):
                 if event["end"] <= start or event["start"] >= end:
