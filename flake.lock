@@ -71,12 +71,30 @@
         "type": "indirect"
       }
     },
+    "pulse": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793386321,
+        "narHash": "sha256-wKMsVofBVtHfnFwFNJHq4btTEb+00rLGyWP+BFvEONA=",
+        "ref": "main",
+        "rev": "e1a1043f3665caad259aeb7d5b09bdafdfdc3a2a",
+        "revCount": 8,
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/pulse.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/pulse.git"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager",
         "jrx": "jrx",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "pulse": "pulse"
       }
     }
   },
