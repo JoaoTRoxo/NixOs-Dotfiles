@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 # Pulse, the daily dashboard: http://100.124.208.1:8484 on the tailnet (the
 # firewall keeps it off the LAN, and it isn't behind the Cloudflare tunnel).
@@ -28,6 +28,8 @@ let
   };
 
   python = pkgs.python3.withPackages (ps: [ ps.anthropic ]);
+  # The Rust Pulse (JoaoTRoxo/pulse), running beside this one for now
+  pulseRust = pkgs.callPackage "${inputs.pulse}/packaging/nix/pulse.nix" { };
   pulse = pkgs.runCommand "pulse" {
     nativeBuildInputs = [ pkgs.makeWrapper pkgs.python3Packages.flake8 ];
   } ''
@@ -169,6 +171,23 @@ in
       NoNewPrivileges = true;
       Restart = "always";
       RestartSec = 10;
+    };
+  };
+
+  # The Rust Pulse, beside the Python one until their snapshots match
+  # (packaging/compare-snapshots.sh in JoaoTRoxo/pulse); then it takes over.
+  # The same settings and credentials, on 127.0.0.1:8485, with its own state.
+  # Keep its source out of garbage collection, as jrx's: root can't fetch
+  # the private repo again
+  system.extraDependencies = [ inputs.pulse ];
+  systemd.services.pulse-shadow = {
+    description = "Pulse in Rust, beside the Python one";
+    inherit (config.systemd.services.pulse) wantedBy after wants path;
+    environment.PULSE_CONFIG = pkgs.writeText "pulse-shadow.json"
+      (builtins.toJSON (settings // { listen = "127.0.0.1:8485"; }));
+    serviceConfig = config.systemd.services.pulse.serviceConfig // {
+      ExecStart = lib.getExe pulseRust;
+      StateDirectory = "pulse-shadow";
     };
   };
 }

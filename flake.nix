@@ -22,6 +22,13 @@
       flake = false;
     };
 
+    # Pulse, the daily dashboard (profiles/pulse.nix). Not a flake either:
+    # its NixOS module and package are plain files in the repo. Private too
+    pulse = {
+      url = "git+ssh://git@github.com/JoaoTRoxo/pulse.git?ref=main";
+      flake = false;
+    };
+
   };
 
     outputs = { self, nixpkgs, ...}@inputs:
