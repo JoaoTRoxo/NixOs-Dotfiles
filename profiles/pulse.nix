@@ -1,14 +1,15 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, inputs, ... }:
 
 # Pulse, the daily dashboard: http://100.124.208.1:8484 on the tailnet (the
 # firewall keeps it off the LAN, and it isn't behind the Cloudflare tunnel).
 # It shows how aurea, its services and jobs, jrxd's recordings, the media
 # stack, the calendar and the projects on GitHub are doing, what needs
-# attention, and a morning brief written by Claude. The code is pkgs/pulse
-# (README.md there); its tests: python3 pkgs/pulse/test_pulse.py
+# attention, and a morning brief written by Claude. The code is in
+# JoaoTRoxo/pulse (the server, the laptop agent and Pulse Desktop); this is
+# its configuration. To update it: nix flake update pulse, then rebuild.
 #
-# The laptop reports its git repos and GitHub (pkgs/pulse/agent.py, set up
-# with pkgs/pulse/pulse-agent-install.sh), and writes the brief with Claude
+# The laptop reports its git repos and GitHub (pulse's
+# packaging/install-agent.sh sets it up), and writes the brief with Claude
 # Code while aurea has no API key.
 #
 # Optional secrets, used as soon as their file exists (agenix -e <name>):
@@ -26,19 +27,6 @@ let
     github = ../secrets/pulse-github.age;
     jellyfin = ../secrets/pulse-jellyfin.age;
   };
-
-  python = pkgs.python3.withPackages (ps: [ ps.anthropic ]);
-  # The Rust Pulse (JoaoTRoxo/pulse), running beside this one for now
-  pulseRust = pkgs.callPackage "${inputs.pulse}/packaging/nix/pulse.nix" { };
-  pulse = pkgs.runCommand "pulse" {
-    nativeBuildInputs = [ pkgs.makeWrapper pkgs.python3Packages.flake8 ];
-  } ''
-    mkdir -p $out/share $out/bin
-    cp -r ${../pkgs/pulse} $out/share/pulse
-    flake8 $out/share/pulse
-    makeWrapper ${python}/bin/python3 $out/bin/pulse \
-      --add-flags $out/share/pulse/server.py
-  '';
 
   web = name: url: { inherit name url; };
   tailnet = p: "http://${tailscaleIp}:${toString p}";
@@ -134,60 +122,26 @@ let
   };
 in
 {
+  imports = [ "${inputs.pulse}/packaging/nix/pulse-service.nix" ];
+
+  # Keep pulse's source out of garbage collection, as jrx's: root can't
+  # fetch the private repo again
+  system.extraDependencies = [ inputs.pulse ];
+
   age.secrets = lib.mapAttrs' (name: file:
     lib.nameValuePair "pulse-${name}" { inherit file; }) optionalSecrets;
 
-  systemd.services.pulse = {
-    description = "Pulse, the daily dashboard";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" "prometheus.service" ];
-    wants = [ "network-online.target" ];
-    # systemctl, tailscale status, and jrxd list (under nice and ionice)
-    path = [ config.systemd.package pkgs.tailscale pkgs.coreutils
-             pkgs.util-linux config.services.jrxd.package ];
-    environment = {
-      PULSE_CONFIG = pkgs.writeText "pulse.json" (builtins.toJSON settings);
-      PYTHONUNBUFFERED = "1";
-      PYTHONDONTWRITEBYTECODE = "1";
-    };
-    serviceConfig = {
-      ExecStart = lib.getExe' pulse "pulse";
-      DynamicUser = true;
-      StateDirectory = "pulse";
-      # jrxd's recordings are 0750 jrxd:jrxd
-      SupplementaryGroups = [ "jrxd" ];
-      LoadCredential = [
-        "sonarr:${config.age.secrets.sonarr-api-key.path}"
-        "radarr:${config.age.secrets.radarr-api-key.path}"
-        "seerr-settings:/var/lib/jellyseerr/settings.json"
-        "radicale:${config.age.secrets.radicale-bridge-pass.path}"
-      ] ++ lib.mapAttrsToList (name: _:
-        "${name}:${config.age.secrets."pulse-${name}".path}") optionalSecrets;
-      # It shares the Q6600 with Jellyfin and jrxd
-      Nice = 5;
-      IOSchedulingPriority = 7;
-      ProtectHome = true;
-      PrivateTmp = true;
-      NoNewPrivileges = true;
-      Restart = "always";
-      RestartSec = 10;
-    };
-  };
-
-  # The Rust Pulse, beside the Python one until their snapshots match
-  # (packaging/compare-snapshots.sh in JoaoTRoxo/pulse); then it takes over.
-  # The same settings and credentials, on 127.0.0.1:8485, with its own state.
-  # Keep its source out of garbage collection, as jrx's: root can't fetch
-  # the private repo again
-  system.extraDependencies = [ inputs.pulse ];
-  systemd.services.pulse-shadow = {
-    description = "Pulse in Rust, beside the Python one";
-    inherit (config.systemd.services.pulse) wantedBy after wants path;
-    environment.PULSE_CONFIG = pkgs.writeText "pulse-shadow.json"
-      (builtins.toJSON (settings // { listen = "127.0.0.1:8485"; }));
-    serviceConfig = config.systemd.services.pulse.serviceConfig // {
-      ExecStart = lib.getExe pulseRust;
-      StateDirectory = "pulse-shadow";
-    };
+  services.pulse = {
+    enable = true;
+    inherit settings;
+    credentials = {
+      sonarr = config.age.secrets.sonarr-api-key.path;
+      radarr = config.age.secrets.radarr-api-key.path;
+      seerr-settings = "/var/lib/jellyseerr/settings.json";
+      radicale = config.age.secrets.radicale-bridge-pass.path;
+    } // lib.mapAttrs (name: _: config.age.secrets."pulse-${name}".path) optionalSecrets;
+    # jrxd list; and jrxd's recordings are 0750 jrxd:jrxd
+    path = [ config.services.jrxd.package ];
+    supplementaryGroups = [ "jrxd" ];
   };
 }
