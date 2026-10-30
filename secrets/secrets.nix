@@ -14,4 +14,7 @@ in {
     "sonarr-api-key.age".publicKeys = [ aurea roxo ];
     "radarr-api-key.age".publicKeys = [ aurea roxo ];
     "jrxd-binance-key.age".publicKeys = [ aurea roxo ];
+    "pulse-anthropic.age".publicKeys = [ aurea roxo ];
+    "pulse-github.age".publicKeys = [ aurea roxo ];
+    "pulse-jellyfin.age".publicKeys = [ aurea roxo ];
     }

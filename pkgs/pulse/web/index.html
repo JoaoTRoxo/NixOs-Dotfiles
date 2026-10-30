@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Pulse</title>
+<link rel="icon" href="/icon.svg">
+<link rel="stylesheet" href="/app.css">
+<script>
+  try {
+    const theme = localStorage.getItem("pulse-theme");
+    if (theme) document.documentElement.dataset.theme = theme;
+  } catch (e) {}
+</script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M5 17h5l3-7 5 13 3-6h6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <h1 id="greeting">Pulse</h1>
+      <div class="date" id="date"></div>
+    </div>
+  </div>
+  <div class="controls">
+    <span class="updated" id="updated"></span>
+    <span class="pill" id="status" role="status">Loading…</span>
+    <button id="refresh" title="Collect everything again now">Refresh</button>
+    <button id="theme" title="Switch between light and dark">Theme</button>
+  </div>
+</header>
+<main id="main">
+  <article class="card brief" id="brief">
+    <header><h2>Morning brief</h2><div class="brief-meta" id="brief-meta"></div></header>
+    <div class="markdown" id="brief-text"><p class="empty">Loading…</p></div>
+    <div class="ask" id="ask">
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <form id="ask-form">
+        <input id="question" autocomplete="off" placeholder="Ask about anything on this page…" aria-label="Ask Claude about the dashboard">
+        <button id="ask-send" type="submit">Ask</button>
+      </form>
+      <div class="small muted" id="ask-note"></div>
+    </div>
+  </article>
+  <article class="card" id="attention"></article>
+  <article class="card" id="today"></article>
+  <article class="card span-2" id="projects"></article>
+  <section class="tiles" id="tiles" aria-label="aurea"></section>
+  <article class="card" id="services"></article>
+  <article class="card" id="jobs"></article>
+  <article class="card" id="recorder"></article>
+  <article class="card" id="coming"></article>
+  <article class="card" id="arrived"></article>
+  <article class="card" id="downloads"></article>
+  <article class="card span-3" id="laptop"></article>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

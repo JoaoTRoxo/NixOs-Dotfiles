@@ -23,6 +23,7 @@
       ../../profiles/radicale.nix
       ../../profiles/vdirsyncer-bridge.nix
       ../../profiles/jrxd.nix
+      ../../profiles/pulse.nix
     ];
 
   boot.loader.grub.enable = true;
