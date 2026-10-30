@@ -74,11 +74,11 @@
     "pulse": {
       "flake": false,
       "locked": {
-        "lastModified": 1793386321,
-        "narHash": "sha256-wKMsVofBVtHfnFwFNJHq4btTEb+00rLGyWP+BFvEONA=",
+        "lastModified": 1793395448,
+        "narHash": "sha256-nPCAhYbjuAwBRu3gMwxXV1mdI+wLpqxMpwXbO6DSoPY=",
         "ref": "main",
-        "rev": "e1a1043f3665caad259aeb7d5b09bdafdfdc3a2a",
-        "revCount": 8,
+        "rev": "e0eec044a0513598137948bdec598597a92339ec",
+        "revCount": 10,
         "type": "git",
         "url": "ssh://git@github.com/JoaoTRoxo/pulse.git"
       },
