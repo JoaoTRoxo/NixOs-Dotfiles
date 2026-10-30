@@ -52,6 +52,13 @@ in
   users.users.aurea.extraGroups = [ "jrxd" ];
 
   # Receive times are only as good as the clock. Unlike timesyncd, chrony tells
-  # the kernel how far off the clock may be, and jrxd records that
-  services.chrony.enable = true;
+  # the kernel how far off the clock may be, and jrxd records that. chrony
+  # clears the kernel's unsynchronised flag only with rtcsync, which conflicts
+  # with the module's RTC trimming; without it every jrxd clock record says
+  # synced: false (jrx #197)
+  services.chrony = {
+    enable = true;
+    enableRTCTrimming = false;
+    extraConfig = "rtcsync";
+  };
 }
