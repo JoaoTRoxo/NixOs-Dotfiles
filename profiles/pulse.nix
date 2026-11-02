@@ -31,7 +31,7 @@ let
   web = name: url: { inherit name url; };
   tailnet = p: "http://${tailscaleIp}:${toString p}";
 
-  settings = {
+  settings = rec {
     name = "João";
     listen = "0.0.0.0:${toString port}";
     # What the page may be opened as (anything else is refused, so another
@@ -90,6 +90,13 @@ let
       { unit = "nix-gc"; name = "Nix garbage collection"; max_age_hours = 192; }
       { unit = "fstrim"; name = "fstrim"; max_age_hours = 192; }
     ];
+
+    # What its buttons may restart or run. Not Infrastructure: restarting that
+    # could cut off the way in (Tailscale, Caddy, the tunnel) or take every
+    # container with it (Docker), and there's no login on the page.
+    manage =
+      map (s: s.unit) (lib.filter (s: s.group != "Infrastructure") services)
+      ++ map (j: "${j.unit}.service") jobs;
 
     # Through Cloudflare and Caddy, as anyone outside sees them
     endpoints = [
