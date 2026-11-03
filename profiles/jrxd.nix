@@ -5,7 +5,7 @@
 # then rebuild. `jrxd list /srv/jrx/raw <YYYY-MM-DD>` shows a day's files and gaps
 let
   dataDir = "/srv/jrx/raw";
-  hyperliquidStreams = [ "trades" "bbo" "l2Book" "l2Book-fast" ];
+  hyperliquidStreams = [ "trades" "bbo" "l2Book" "l2Book-fast" "activeAssetCtx" ];
   # HIP-3 markets, the perps builders deploy on Hyperliquid: the top 20 by 24 h
   # volume on 2026-10-29 (83% of HIP-3 volume). A fixed list, so each market's
   # history stays unbroken: add markets as they matter, drop only delisted ones
@@ -42,7 +42,7 @@ in
     settings.instruments = [
       { id = "hyperliquid-mainnet:BTC"; streams = hyperliquidStreams; }
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
-      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" ]; }
+      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" ]; }
     ] ++ map (market: { id = "hyperliquid-mainnet:${market}"; streams = hyperliquidStreams; }) hip3Markets;
   };
 

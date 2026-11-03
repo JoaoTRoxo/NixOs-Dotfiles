@@ -43,11 +43,11 @@
     "jrx": {
       "flake": false,
       "locked": {
-        "lastModified": 1793463935,
-        "narHash": "sha256-FcD9bI9C2PTQqxjdDUjL2r61vfo0jqN7LU8x6meLDTs=",
+        "lastModified": 1793668576,
+        "narHash": "sha256-paXCpnjEg2aKL9f2Qo8T8nD8IVkG9ZL9t//g0cV6jaU=",
         "ref": "main",
-        "rev": "b25bddb7612a697160f46ae492eba479fe5855bc",
-        "revCount": 439,
+        "rev": "5fe8216c8da53f1cc91a341044faf98c05b299e7",
+        "revCount": 457,
         "type": "git",
         "url": "ssh://git@github.com/JoaoTRoxo/jrx.git"
       },
