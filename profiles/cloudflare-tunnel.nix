@@ -30,6 +30,8 @@
     enable = true;
     tunnels."8d582240-9666-4ad0-ae5d-6215bd6dcad3" = {
         credentialsFile = config.age.secrets.vault-tunnel.path;
+        # Default is IPv4 only; with auto the tunnel survives losing IPv4 on the LAN (2026-11-03)
+        edgeIPVersion = "auto";
         default = "http_status:404";
     };
   };
