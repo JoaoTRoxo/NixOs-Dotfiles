@@ -1,8 +1,10 @@
 { config, inputs, ... }:
 
 # jrxd, JRX's recorder of public market data (ADR-033 in JoaoTRoxo/jrx), writes
-# raw capture files to the second disk. To update it: nix flake update jrx,
-# then rebuild. `jrxd list /srv/jrx/raw <YYYY-MM-DD>` shows a day's files and gaps
+# raw capture files to the second disk. To update it: nix flake update jrx, then
+# rebuild, which leaves the running recorder alone, then sudo systemctl start
+# jrxd-handover, which moves it to the new version with no gap.
+# `jrxd list /srv/jrx/raw <YYYY-MM-DD>` shows a day's files and gaps
 let
   dataDir = "/srv/jrx/raw";
   hyperliquidStreams = [ "trades" "bbo" "l2Book" "l2Book-fast" "activeAssetCtx" ];
@@ -42,7 +44,7 @@ in
     settings.instruments = [
       { id = "hyperliquid-mainnet:BTC"; streams = hyperliquidStreams; }
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
-      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" ]; }
+      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" "openInterest" ]; }
     ] ++ map (market: { id = "hyperliquid-mainnet:${market}"; streams = hyperliquidStreams; }) hip3Markets;
   };
 
