@@ -42,7 +42,7 @@ in
     settings.instruments = [
       { id = "hyperliquid-mainnet:BTC"; streams = hyperliquidStreams; }
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
-      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" ]; }
+      { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" "openInterest" ]; }
     ] ++ map (market: { id = "hyperliquid-mainnet:${market}"; streams = hyperliquidStreams; }) hip3Markets;
   };
 
