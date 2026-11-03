@@ -4,18 +4,23 @@
   networking = {
     hostName = "aurea";
     networkmanager.enable = true;
-    # Configured by the static setup below (network-addresses-enp1s0); keep NM's
-    # auto "Wired connection" DHCP profiles off it, e.g. after the watchdog reloads the driver
+    # Configured by dhcpcd below; keep NM's auto "Wired connection" DHCP
+    # profiles off it, e.g. after the watchdog reloads the driver
     networkmanager.unmanaged = [ "enp1s0" ];
 
-    interfaces.enp1s0 = {
-      ipv4.addresses = [{
-        address = "192.168.100.5";
-        prefixLength = 24;
-      }];
+    # DHCP, not a static address: the router was replaced on 2026-11-03 and
+    # the old static 192.168.100.0/24 settings left the box without IPv4
+    interfaces.enp1s0.useDHCP = true;
+    dhcpcd = {
+      wait = "background";
+      # The kernel keeps handling IPv6 router advertisements, so the tunnel and
+      # Tailscale still work if DHCP doesn't
+      extraConfig = ''
+        ipv4only
+        noipv4ll
+      '';
     };
 
-    defaultGateway = "192.168.100.1";
     nameservers = [ "1.1.1.1" "8.8.8.8" ];
   };
 
@@ -32,7 +37,8 @@
       count=/run/nic-watchdog.failures
       # Telegram can't be reached while offline: leave a note that profiles/alerts.nix sends later
       pending=/var/lib/server-alerts/pending
-      if ping -q -c 3 -W 2 -I enp1s0 192.168.100.1 > /dev/null 2>&1; then
+      gateway=$(ip -4 route show default dev enp1s0 | sed -n 's/.*via \([^ ]*\).*/\1/p' | head -n 1)
+      if [ -n "$gateway" ] && ping -q -c 3 -W 2 -I enp1s0 "$gateway" > /dev/null 2>&1; then
         if [ -e $count ]; then
           failures=$(cat $count)
           echo "gateway reachable again after $failures min"
@@ -56,12 +62,12 @@
         3)
           echo "bouncing enp1s0"
           ip link set enp1s0 down; sleep 2; ip link set enp1s0 up; sleep 5
-          systemctl restart network-addresses-enp1s0.service
+          systemctl restart dhcpcd.service
           ;;
         6)
           echo "reloading the atl1 driver"
           modprobe -r atl1; sleep 2; modprobe atl1; sleep 10
-          systemctl restart network-addresses-enp1s0.service
+          systemctl restart dhcpcd.service
           ;;
         *)
           if [ $failures -ge 15 ] && [ "$(cut -d. -f1 /proc/uptime)" -gt 3600 ]; then
