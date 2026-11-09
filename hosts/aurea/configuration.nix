@@ -16,6 +16,7 @@
       ../../profiles/backup.nix
       ../../profiles/alerts.nix
       ../../profiles/seerr-telegram.nix
+      ../../profiles/seerr-subtitles.nix
       ../../profiles/recyclarr.nix
       ../../profiles/core.nix
       ../../profiles/tailscale.nix
