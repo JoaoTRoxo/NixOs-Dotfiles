@@ -46,6 +46,10 @@ in
       { id = "binance-spot:BTCUSDT"; streams = [ "trade" "bookTicker" "bestBidAsk-sbe" "depth-sbe" ]; }
       { id = "binance-usdm:BTCUSDT"; streams = [ "trade" "bookTicker" "depth@100ms" "markPrice@1s" "forceOrder" "openInterest" ]; }
     ] ++ map (market: { id = "hyperliquid-mainnet:${market}"; streams = hyperliquidStreams; }) hip3Markets;
+    # HIP-4 contracts that settle on the price of a Hyperliquid instrument above,
+    # as Hyperliquid lists them (jrx #236). They ride those instruments'
+    # connections, so each stream here must be one they record
+    settings.hyperliquid_outcomes.streams = [ "trades" "bbo" "l2Book" "activeAssetCtx" ];
   };
 
   # jrxd list and print on the command line, and the recordings readable by
