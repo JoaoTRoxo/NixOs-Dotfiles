@@ -61,6 +61,7 @@ let
         (web "Bazarr" (tailnet 6767) // { unit = "docker-bazarr.service"; })
         { name = "Byparr"; unit = "docker-byparr.service"; }
         { name = "Seerr on Telegram"; unit = "seerr-telegram.service"; }
+        { name = "Subtitle requests"; unit = "seerr-subtitles.service"; }
       ]
       ++ map (s: s // { group = "Apps"; }) [
         { name = "jrxd recorder"; unit = "jrxd.service"; }
