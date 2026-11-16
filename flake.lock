@@ -101,11 +101,11 @@
     "treino": {
       "flake": false,
       "locked": {
-        "lastModified": 1794846777,
-        "narHash": "sha256-rqiG5Ht4vF6gzRhiqEBSbdI8/xWjkjRMFTEdxq8qQIY=",
+        "lastModified": 1794847508,
+        "narHash": "sha256-EymIgcVqceISR0duqxCBRUZB4jjNMozA8wDN66IwJzY=",
         "ref": "main",
-        "rev": "102ee9c368721d7b79848dc865366bbcca76c7c2",
-        "revCount": 1,
+        "rev": "d861f0610632e95b0153eb102866a39db0570f9d",
+        "revCount": 2,
         "type": "git",
         "url": "ssh://git@github.com/JoaoTRoxo/treino.git"
       },
