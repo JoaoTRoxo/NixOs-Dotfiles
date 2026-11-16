@@ -29,6 +29,13 @@
       flake = false;
     };
 
+    # Treino, the workout log (profiles/treino.nix). Same shape: a module and
+    # a package as plain files, private, over SSH
+    treino = {
+      url = "git+ssh://git@github.com/JoaoTRoxo/treino.git?ref=main";
+      flake = false;
+    };
+
   };
 
     outputs = { self, nixpkgs, ...}@inputs:

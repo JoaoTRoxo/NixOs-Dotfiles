@@ -21,6 +21,7 @@ let
     bazarr = "/var/lib/bazarr";
     qbittorrent = "/var/lib/qbittorrent";
     nixos-config = "/home/aurea/NixOs-Dotfiles";
+    treino = "/var/lib/private/treino";
   };
   # Regenerated or re-downloaded on their own
   excludes = [ "cache/" "log/" "logs/" "transcodes/" "MediaCover/" "Backups/" ".Radicale.cache/" "*-wal" "*-shm" "*-journal" ];
