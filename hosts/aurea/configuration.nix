@@ -25,6 +25,7 @@
       ../../profiles/vdirsyncer-bridge.nix
       ../../profiles/jrxd.nix
       ../../profiles/pulse.nix
+      ../../profiles/treino.nix
     ];
 
   boot.loader.grub.enable = true;

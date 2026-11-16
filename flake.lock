@@ -94,7 +94,25 @@
         "home-manager": "home-manager",
         "jrx": "jrx",
         "nixpkgs": "nixpkgs",
-        "pulse": "pulse"
+        "pulse": "pulse",
+        "treino": "treino"
+      }
+    },
+    "treino": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794846777,
+        "narHash": "sha256-rqiG5Ht4vF6gzRhiqEBSbdI8/xWjkjRMFTEdxq8qQIY=",
+        "ref": "main",
+        "rev": "102ee9c368721d7b79848dc865366bbcca76c7c2",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/treino.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/treino.git"
       }
     }
   },

@@ -65,6 +65,7 @@ let
       ]
       ++ map (s: s // { group = "Apps"; }) [
         { name = "jrxd recorder"; unit = "jrxd.service"; }
+        (web "Treino" (tailnet 8585) // { unit = "treino.service"; })
         (web "Gitea" "https://git.joaoroxo.com" // { unit = "gitea.service"; })
         (web "Grafana" "https://monitor.joaoroxo.com" // { unit = "grafana.service"; })
         (web "Radicale" "https://calendar.joaoroxo.com" // { unit = "radicale.service"; })
