@@ -45,6 +45,7 @@
     port = 9090;
     exporters.node = {
       enable = true;
+      listenAddress = "127.0.0.1";
       enabledCollectors = [ "systemd" ];
       port = 9100;
     };

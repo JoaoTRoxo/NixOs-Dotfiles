@@ -36,6 +36,13 @@
       flake = false;
     };
 
+    # CP Seat Watch, interactive Telegram bot & Green Rail Pass watcher
+    # (profiles/cp-seat-watch.nix). Plain Go package + NixOS module over SSH
+    cp-seat-watch = {
+      url = "git+ssh://git@github.com/JoaoTRoxo/cp-seat-watch.git?ref=main";
+      flake = false;
+    };
+
   };
 
     outputs = { self, nixpkgs, ...}@inputs:

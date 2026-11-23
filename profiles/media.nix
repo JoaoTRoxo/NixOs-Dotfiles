@@ -86,6 +86,8 @@ in
     byparr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
       ports = [ "8191:8191" ];
+      # Headless Chromium + SwiftShader can spike all cores on the Q6600
+      extraOptions = [ "--cpus=1.0" ];
       environment = {
         LOG_LEVEL = "info";
         TZ = "Europe/Lisbon";

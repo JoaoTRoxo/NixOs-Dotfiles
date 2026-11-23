@@ -32,6 +32,9 @@ in
     ];
     WorkingDirectory = lib.mkForce "/config/data";
     ExecStart = lib.mkForce "${lib.getExe jellyfin} --datadir /config/data --configdir /config --cachedir /config/cache --logdir /config/log";
+    # Keep background ffmpeg jobs (intro/credits blackdetect, chapter extraction)
+    # from pegging all 4 cores on the Core 2 Quad Q6600.
+    CPUQuota = "100%";
   };
   # Empty mount points for the binds above
   systemd.tmpfiles.settings.jellyfinMountPoints = {
@@ -42,41 +45,6 @@ in
   # Each rebuild boots the new Jellyfin on this CPU first (in the build
   # sandbox); an update that can't run here fails nixos-rebuild instead.
   system.checks = [ jellyfin.tests.core2-smoke ];
-
-  # One-time copy of the 10.10.7 container's state. /var/lib/jellyfin-docker is
-  # left untouched as the way back (12.x migrates its copy in place on first start).
-  # Safe to delete this unit once you're happy with 12.x.
-  systemd.services.jellyfin-import-docker = {
-    description = "Copy Jellyfin state from the old 10.10.7 container";
-    requiredBy = [ "jellyfin.service" ];
-    before = [ "jellyfin.service" ];
-    unitConfig.ConditionPathExists = "!${state}/.imported-from-docker";
-    path = [ pkgs.rsync ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      tmp=${state}.importing
-      rm -rf "$tmp"
-      # Rate-limited: this disk's SATA link has failed under big write bursts
-      rsync -a --bwlimit=20m /var/lib/jellyfin-docker/ "$tmp/"
-
-      # Plugins built for 10.10 don't load on 12.x and can break the migration.
-      # Their settings stay in data/plugins/configurations: reinstall from the catalog.
-      mkdir -p "$tmp/plugins-10.10"
-      find "$tmp/data/plugins" -mindepth 1 -maxdepth 1 -type d ! -name configurations \
-        -exec mv -t "$tmp/plugins-10.10" {} +
-
-      # Whatever is there (an abandoned native install from May + tmpfiles dirs) goes aside
-      if [ -e ${state} ]; then
-        mv -T ${state} "${state}.before-import-$(date +%Y%m%d-%H%M%S)"
-      fi
-      mv -T "$tmp" ${state}
-      chmod 700 ${state}
-      touch ${state}/.imported-from-docker
-    '';
-  };
 
   services.caddy.virtualHosts."http://stream.joaoroxo.com".extraConfig = ''
     reverse_proxy 127.0.0.1:8096

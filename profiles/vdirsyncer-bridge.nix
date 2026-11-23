@@ -73,16 +73,6 @@ in
     script = ''
       mkdir -p ${status}
 
-      # One-time: the sync status is from 2026-09-09, before the Radicale
-      # calendars were deleted (and some recreated) in the web UI. Syncing
-      # against it could push those deletions to iCloud, so start over with a
-      # fresh merge, which never deletes anything.
-      if [ ! -e /var/lib/vdirsyncer/.status-reset-2026-10 ]; then
-        mv -T ${status} ${status}.2026-09-09
-        mkdir -p ${status}
-        touch /var/lib/vdirsyncer/.status-reset-2026-10
-      fi
-
       # vdirsyncer 0.20+ has no `implicit = "create"`. A calendar missing on
       # Radicale makes every collection fail (404 for it, "Server disconnected"
       # for the rest), so recreate it and drop its status so it refills from iCloud.
