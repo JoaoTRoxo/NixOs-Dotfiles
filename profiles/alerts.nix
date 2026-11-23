@@ -117,6 +117,24 @@ let
         telegram-notify "⚠️ aurea: $errors disk/SATA errors in the kernel log in the last few minutes" || now=$last
       fi
 
+      # CPU temperature (coretemp): alert at >= 85°C, clear once <= 79°C (hysteresis).
+      # On Core 2 (Q6600), hitting TjMax (100°C) can wrap the DTS readout negative (-27°C).
+      cpu_max=0
+      for hw in /sys/class/hwmon/hwmon*; do
+        [ "$(cat "$hw/name" 2>/dev/null)" = "coretemp" ] || continue
+        for t in "$hw"/temp*_input; do
+          [ -r "$t" ] || continue
+          c=$(( $(cat "$t") / 1000 ))
+          if [ "$c" -lt 0 ]; then c=100; fi
+          if [ "$c" -gt "$cpu_max" ]; then cpu_max=$c; fi
+        done
+      done
+      if [ "$cpu_max" -ge 85 ]; then
+        problem "cpu-hot" "🌡️ aurea: CPU at ''${cpu_max}°C (check fan/thermal paste)"
+      elif [ "$cpu_max" -ge 80 ] && [ -e "${state}/active/cpu-hot" ]; then
+        seen+=("cpu-hot")
+      fi
+
       # Backups: the server's nightly snapshot, and the laptop actually pulling it
       complete=/var/backup/aurea/.complete
       if [ ! -e $complete ] || [ $((now - $(stat -c %Y $complete))) -gt $((36 * 3600)) ]; then
@@ -215,8 +233,17 @@ in
           crc="$crc ''${disk%%=*} $(smartctl -j -A "''${disk#*=}" | jq -r '.ata_smart_attributes.table[]? | select(.id == 199) | .raw.value')"
         done
         failed=$(systemctl list-units --state=failed --plain --no-legend | wc -l)
+        cpu_max=0
+        for hw in /sys/class/hwmon/hwmon*; do
+          [ "$(cat "$hw/name" 2>/dev/null)" = "coretemp" ] || continue
+          for t in "$hw"/temp*_input; do
+            [ -r "$t" ] || continue
+            c=$(( $(cat "$t") / 1000 ))
+            if [ "$c" -gt "$cpu_max" ]; then cpu_max=$c; fi
+          done
+        done
         telegram-notify "📊 aurea weekly
-      up $(( $(cut -d. -f1 /proc/uptime) / 86400 )) days, $failed failed units
+      up $(( $(cut -d. -f1 /proc/uptime) / 86400 )) days, $failed failed units, CPU ''${cpu_max}°C
       disk $(df -h --output=pcent / | tail -n 1 | tr -d ' ') used, $(df -h --output=avail / | tail -n 1 | tr -d ' ') free
       SATA CRC errors (total):$crc
       last backup snapshot: $(cat /var/backup/aurea/.complete 2>/dev/null || echo never)"

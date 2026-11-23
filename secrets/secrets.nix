@@ -11,6 +11,8 @@ in {
     "icloud-app-pass.age".publicKeys = [ aurea roxo ];
     "radicale-bridge-pass.age".publicKeys = [ aurea roxo ];
     "telegram-alerts.age".publicKeys = [ aurea roxo ];
+    "seerr-telegram.age".publicKeys = [ aurea roxo ];
+    "cp-seat-watch.age".publicKeys = [ aurea roxo ];
     "sonarr-api-key.age".publicKeys = [ aurea roxo ];
     "radarr-api-key.age".publicKeys = [ aurea roxo ];
     "jrxd-binance-key.age".publicKeys = [ aurea roxo ];

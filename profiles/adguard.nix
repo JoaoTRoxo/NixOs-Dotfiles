@@ -7,8 +7,9 @@
   };
 
   networking.firewall = {
-    allowedTCPPorts = [ 53 3000 ];
-    allowedUDPPorts = [ 53 ]; 
+    # Only DNS on the LAN; the web UI on 3000 stays reachable over Tailscale (trusted interface).
+    allowedTCPPorts = [ 53 ];
+    allowedUDPPorts = [ 53 ];
   };
 
   services.resolved.enable = false;

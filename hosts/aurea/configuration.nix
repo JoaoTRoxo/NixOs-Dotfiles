@@ -26,6 +26,7 @@
       ../../profiles/jrxd.nix
       ../../profiles/pulse.nix
       ../../profiles/treino.nix
+      ../../profiles/cp-seat-watch.nix
     ];
 
   boot.loader.grub.enable = true;

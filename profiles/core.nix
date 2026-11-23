@@ -73,4 +73,11 @@
     # The Oct 15-20 restart loop filled the journal to 3.9 GB
     services.journald.settings.Journal.SystemMaxUse = "1G";
 
+    # Compressed in-RAM swap at higher priority than the 2009 mechanical HDD swap
+    zramSwap = {
+      enable = true;
+      memoryPercent = 50;
+      priority = 100;
+    };
+
 }

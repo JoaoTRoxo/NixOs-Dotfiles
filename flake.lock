@@ -20,6 +20,23 @@
         "type": "github"
       }
     },
+    "cp-seat-watch": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795460196,
+        "narHash": "sha256-on5fHAR0+Bzh3Iu7zJlb9BtVMK0WTnP+Ktp9vsxXoY4=",
+        "ref": "main",
+        "rev": "98cd168d0b335dfa3fb93df9887a9bc8f8ccf10c",
+        "revCount": 9,
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/cp-seat-watch.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/JoaoTRoxo/cp-seat-watch.git"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -91,6 +108,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "cp-seat-watch": "cp-seat-watch",
         "home-manager": "home-manager",
         "jrx": "jrx",
         "nixpkgs": "nixpkgs",
