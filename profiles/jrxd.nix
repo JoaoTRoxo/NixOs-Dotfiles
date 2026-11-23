@@ -1,9 +1,11 @@
 { config, inputs, ... }:
 
 # jrxd, JRX's recorder of public market data (ADR-033 in JoaoTRoxo/jrx), writes
-# raw capture files to the second disk. To update it: nix flake update jrx, then
-# rebuild, which leaves the running recorder alone, then sudo systemctl start
-# jrxd-handover, which moves it to the new version with no gap.
+# raw capture files to the second disk. To update it: nix flake update jrx, nix
+# flake archive, nixos-rebuild build, then nixos-rebuild switch, whose
+# jrxd-handover-check moves the recorder to the new version with no gap. Build
+# first: a build and a handover at once starve the recorders, and the venue then
+# resets the standby's connections (2026-11-23, 8 s lost on Hyperliquid).
 # `jrxd list /srv/jrx/raw <YYYY-MM-DD>` shows a day's files and gaps
 let
   dataDir = "/srv/jrx/raw";
